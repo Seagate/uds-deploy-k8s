@@ -1,0 +1,53 @@
+{{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pv.storage.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: {{ .Values.pilotlinkctrlr.pv.storage.storage }}
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  hostPath:
+    path: {{ .Values.pilotlinkctrlr.pv.storage.hostpath }}
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  hostPath:
+    path: /dev
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  hostPath:
+    path: /sys
+{{- end }}

@@ -1,0 +1,36 @@
+namespace: default
+pilotlinkctrlr:
+    serviceaccount:
+        name: pilot-link-ctrlr-service-account
+    clusterrolebinding:
+        name: pilot-link-ctrlr-rbac-binding
+    name: pilot-link-ctrlr
+    config:
+        name: pilot-link-ctrlr-cfg
+        file: pilot-link-ctrlr-config.json
+    nodeselector:
+        pilotlinknodelabel: default
+    pod:
+        image: ghcr.io/seagate/udspilotlinkctrlr:0.1.0
+        mountpath: /pilot-link/storage
+    pv:
+        storage:
+            name: pilot-link-ctrlr-hostpath
+            storage: 1Gi
+            hostpath: /mnt/pilot-link/storage
+        hostdevices:
+            name: pilot-link-ctrlr-hostdevices
+        hostsys:
+            name: pilot-link-ctrlr-hostsys
+    pvc:
+        storage:
+            name: pilot-link-ctrlr-hostpath
+            storage: 1Gi
+        hostdevices:
+            name: pilot-link-ctrlr-hostdevices
+        hostsys:
+            name: pilot-link-ctrlr-hostsys
+    dataservices:
+        numof: '1'
+        type: 'detect'
+        image: ghcr.io/seagate/udspilotlinkds:0.1.0

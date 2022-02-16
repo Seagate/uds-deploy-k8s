@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.pilotlinkctrlr.clusterrolebinding.name }}
+  namespace: {{ .Values.namespace }}
+subjects:
+  - kind: ServiceAccount
+    # Reference to upper's `metadata.name`
+    name: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
+    # Reference to upper's `metadata.namespace`
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.pilotlinkctrlr.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  pilot-link-ctrlr-config.json:
+    {{ toJson .Values.pilotlinkctrlr.config.file }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.pilotlinkctrlr.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pilotlinkctrlr.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pilotlinkctrlr.name }}
+    spec:
+      volumes:
+        - name: {{ .Values.pilotlinkctrlr.config.name }}
+          configMap: 
+            name: {{ .Values.pilotlinkctrlr.config.name }}
+        {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+        - name: {{ .Values.pilotlinkctrlr.pv.storage.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.storage.name }}
+        - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+        - name: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
+        {{- end }}
+      containers:
+        - name: {{ .Values.pilotlinkctrlr.name }}
+          image: {{ .Values.pilotlinkctrlr.pod.image }}
+          env:
+          - name: PILOT_LINK_NAMESPACE
+            value: {{ .Values.namespace }}
+          - name: PILOT_LINK_NODE_SELECTOR
+            value: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
+          - name: PILOT_LINK_CTRLR_NAME
+            value: {{ .Values.pilotlinkctrlr.name }}
+          {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+          - name: PILOT_LINK_CTRLR_MNT_BASE
+            value: {{ .Values.pilotlinkctrlr.pod.mountpath }}
+          {{- end }}
+          - name: PILOT_LINK_DS_NUMOF
+            value: {{ .Values.pilotlinkctrlr.dataservices.numof | quote }}
+          - name: PILOT_LINK_DS_TYPE
+            value: {{ .Values.pilotlinkctrlr.dataservices.type | quote }}
+          - name: PILOT_LINK_DS_IMAGE
+            value: {{ .Values.pilotlinkctrlr.dataservices.image | quote }}
+          resources: {}
+          volumeMounts:
+            - name: {{ .Values.pilotlinkctrlr.config.name }}
+              mountPath: /etc/udsctrlr
+            {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+            - name: {{ .Values.pilotlinkctrlr.pv.storage.name }}
+              mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
+              mountPropagation: Bidirectional
+            - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+              mountPath: /hostdev
+              mountPropagation: HostToContainer
+            - name: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+              mountPath: /hostsys
+              mountPropagation: HostToContainer
+            {{- end }}
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+      {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+      nodeSelector:
+        pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
+      {{- end }}
+      serviceAccountName: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
+
