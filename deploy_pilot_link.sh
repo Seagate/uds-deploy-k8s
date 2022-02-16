@@ -1,9 +1,10 @@
 #!/bin/bash
 
+BASE_PATH=$(dirname "$(realpath -s "$0")")
 NAMESPACE=${1:-"nostore1"}
 CREATE_COUNT=${2:-2}
 TYPE=${3:-"no"}
-CFG_FILE=${4:-"etc/kubernetes/cfg/pilot-link-ctrlr-config.json"}
+CFG_FILE=${4:-"$BASE_PATH/cfg/pilot-link-ctrlr-config.json"}
 NODE_LABEL=${5:-""}
 
 namespace=$NAMESPACE
@@ -37,7 +38,7 @@ fi
 if [[ $TYPE == "no" ]]
 then
     printf "Creating $namespace-$name\n"
-    helm install $namespace"-"$name helm_pkg/pilot-link-ctrlr \
+    helm install $namespace"-"$name $BASE_PATH/helm_pkg/pilot-link-ctrlr \
         --set pilotlinkctrlr.clusterrolebinding.name=$clusterrolebinding \
         --set namespace=$namespace \
         --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
@@ -55,7 +56,7 @@ then
     pv_hostsys_name=$namespace"-pilot-link-ctrlr-hostsys"
     
     printf "Creating $namespace-$name\n"
-    helm install $namespace"-"$name helm_pkg/pilot-link-ctrlr \
+    helm install $namespace"-"$name $BASE_PATH/helm_pkg/pilot-link-ctrlr \
         --set pilotlinkctrlr.clusterrolebinding.name=$clusterrolebinding \
         --set namespace=$namespace \
         --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
