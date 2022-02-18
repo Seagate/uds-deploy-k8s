@@ -41,7 +41,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 type: Opaque
 stringData:
-  lpregurl: {{ .Values.pilotlinkctrlr.secret.lpregurl }}
+  lpapiurl: {{ .Values.pilotlinkctrlr.secret.lpapiurl }}
   lpusername: {{ .Values.pilotlinkctrlr.secret.lpusername }}
   lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword }}
 ---
@@ -95,11 +95,11 @@ spec:
             value: {{ .Values.pilotlinkctrlr.dataservices.type | quote }}
           - name: PILOT_LINK_DS_IMAGE
             value: {{ .Values.pilotlinkctrlr.dataservices.image | quote }}
-          - name: LYVE_PILOT_REG_URL
+          - name: LYVE_PILOT_API_URL
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.pilotlinkctrlr.secret.name }}
-                key: lpregurl
+                key: lpapiurl
           - name: LYVE_PILOT_USERNAME
             valueFrom:
               secretKeyRef:

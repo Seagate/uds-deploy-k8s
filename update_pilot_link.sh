@@ -5,6 +5,31 @@ NAMESPACE=""
 while [[ $# -gt 0 ]]
 do
     case $1 in
+        -h|--help)
+            printf "Udpate a Pilot Link deployment with specified container images. Both Pilot Link\n"
+            printf "Controller and Data Services can be updated\n"
+            printf "\n"
+            printf "The container image locations are specified using the environment variables\n"
+            printf "prior to running the script:\n"
+            printf "  export PILOT_LINK_DS_IMAGE=mycontaineregistry/udspilotlinkds:x.x.x\n"
+            printf "  export PILOT_LINK_CTRLR_IMAGE=mycontaineregistry/udspilotlinkctrlr:x.x.x\n"
+            printf "\n"
+            printf "Examples:\n"
+            printf "  # Udpate a Pilot Link deployment with the specified namespace\n"
+            printf "  update_pilot_link.sh -n namespace\n"
+            printf "\n"
+            printf "  # Udpates all Pilot Link deployments in the kubernetes cluster\n"
+            printf "  update_pilot_link.sh\n"
+            printf "\n"
+            printf "Options:\n"
+            printf "      -n, --namespace: The optional namespace to update. If no namespace\n"
+            printf "is provided all deployment will be udpated\n"
+            printf "\n"
+            printf "Usage:\n"
+            printf "  update_pilot_link.sh [options]\n"
+            printf "\n"
+            exit 1
+            ;;
         -n|--namespace)
             NAMESPACE=$2
             shift

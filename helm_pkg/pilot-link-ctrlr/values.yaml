@@ -10,7 +10,7 @@ pilotlinkctrlr:
         file: pilot-link-ctrlr-config.json
     secret:
         name: pilot-link-ctrlr-secret
-        lpregurl: notset
+        lpapiurl: notset
         lpusername: notset
         lppassword: notset
     nodeselector:
