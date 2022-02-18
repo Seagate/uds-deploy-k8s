@@ -52,6 +52,5 @@ printf "Modifying the configuration for $namespace/$name"
 kubectl create configmap -n $namespace $name-cfg --from-literal=pilot-link-ctrlr-config.json="$CFG_CONTENT" -o yaml --dry-run=client | kubectl replace -f -
 
 printf "Applying configuration to $namespace/$name\n"
-POD_NAME=$(kubectl get pod -n $namespace | grep $name | cut -f1 -d " ")
-kubectl delete pod -n $namespace $POD_NAME
+kubectl rollout restart -n $namespace deployment/$name
 printf "Configuration modification complete for $namespace/$name\n"
