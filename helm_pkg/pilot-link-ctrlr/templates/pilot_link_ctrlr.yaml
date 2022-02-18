@@ -34,6 +34,17 @@ data:
   pilot-link-ctrlr-config.json:
     {{ toJson .Values.pilotlinkctrlr.config.file }}
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.pilotlinkctrlr.secret.name }}
+  namespace: {{ .Values.namespace }}
+type: Opaque
+stringData:
+  lpregurl: {{ .Values.pilotlinkctrlr.secret.lpregurl }}
+  lpusername: {{ .Values.pilotlinkctrlr.secret.lpusername }}
+  lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,6 +95,21 @@ spec:
             value: {{ .Values.pilotlinkctrlr.dataservices.type | quote }}
           - name: PILOT_LINK_DS_IMAGE
             value: {{ .Values.pilotlinkctrlr.dataservices.image | quote }}
+          - name: LYVE_PILOT_REG_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pilotlinkctrlr.secret.name }}
+                key: lpregurl
+          - name: LYVE_PILOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pilotlinkctrlr.secret.name }}
+                key: lpusername
+          - name: LYVE_PILOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pilotlinkctrlr.secret.name }}
+                key: lppassword
           resources: {}
           volumeMounts:
             - name: {{ .Values.pilotlinkctrlr.config.name }}

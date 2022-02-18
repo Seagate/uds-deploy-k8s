@@ -1,7 +1,30 @@
  #!/bin/bash
 
-NAMESPACE=${1:-""}
-NAME=${2:-"pilot-link-"}
+NAMESPACE=""
+
+while [[ $# -gt 0 ]]
+do
+    case $1 in
+        -n|--namespace)
+            NAMESPACE=$2
+            shift
+            shift
+            ;;
+        -f|--file)
+            CFG_FILE=$2
+            shift
+            shift
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
+
+NAME=${1:-"pilot-link-"}
 
 namespace=$NAMESPACE
 name=$NAME

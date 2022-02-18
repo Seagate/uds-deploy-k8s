@@ -1,15 +1,80 @@
 #!/bin/bash
 
 BASE_PATH=$(dirname "$(realpath -s "$0")")
-NAMESPACE=${1:-"nostore1"}
-CREATE_COUNT=${2:-2}
-TYPE=${3:-"no"}
-CFG_FILE=${4:-"$BASE_PATH/cfg/pilot-link-ctrlr-config.json"}
-NODE_LABEL=${5:-""}
+NAMESPACE="nostore1"
+CREATE_COUNT=2
+TYPE="no"
+CFG_FILE="$BASE_PATH/cfg/pilot-link-ctrlr-config.json"
+NODE_LABEL=""
+LP_REGURL="notset"
+LP_USERNAME="notset"
+LP_PASSWORD=""
+
+while [[ $# -gt 0 ]]
+do
+    case $1 in
+        -n|--namespace)
+            NAMESPACE=$2
+            shift
+            shift
+            ;;
+        -c|--count)
+            CREATE_COUNT=$2
+            shift
+            shift
+            ;;
+        -t|--type)
+            TYPE=$2
+            shift
+            shift
+            ;;
+        -f|--file)
+            CFG_FILE=$2
+            shift
+            shift
+            ;;
+        -l|--label)
+            NODE_LABEL=$2
+            shift
+            shift
+            ;;
+        -r|--regurl)
+            LP_REGURL=$2
+            shift
+            shift
+            ;;
+        -u|--username)
+            LP_USER=$2
+            shift
+            shift
+            ;;
+        -p|--password)
+            LP_PASSWORD=$2
+            shift
+            shift
+            ;;
+        -*|--*)
+            printf "ERROR: Unknown option $1\n"
+            exit 1
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
 
 namespace=$NAMESPACE
 clusterrolebinding=$namespace"-pilot-link-ctrlr-rbac-binding"
 name="pilot-link-ctrlr"
+
+if [ "$LP_PASSWORD" == "" ]
+then
+    printf "Enter your Lyve Pilot user account password : \n"
+    read -s LP_PASSWORD
+fi
 
 if [ "$CFG_FILE" == "" ] || [ ! -e $CFG_FILE ]
 then
@@ -45,6 +110,9 @@ then
         --set pilotlinkctrlr.dataservices.numof=$CREATE_COUNT \
         --set pilotlinkctrlr.dataservices.type=$TYPE \
         --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
+        --set pilotlinkctrlr.secret.lpregurl=$LP_REGURL \
+        --set pilotlinkctrlr.secret.lpusername=$LP_USERNAME \
+        --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
         --set-file pilotlinkctrlr.config.file=$CFG_FILE
 fi
 
@@ -68,5 +136,8 @@ then
         --set pilotlinkctrlr.dataservices.numof=$CREATE_COUNT \
         --set pilotlinkctrlr.dataservices.type=$TYPE \
         --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
+        --set pilotlinkctrlr.secret.lpregurl=$LP_REGURL \
+        --set pilotlinkctrlr.secret.lpusername=$LP_USERNAME \
+        --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
         --set-file pilotlinkctrlr.config.file=$CFG_FILE
 fi

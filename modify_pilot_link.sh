@@ -1,7 +1,29 @@
  #!/bin/bash
 
-NAMESPACE=${1:-""}
-CFG_FILE=${2:-""}
+NAMESPACE=""
+CFG_FILE=""
+
+while [[ $# -gt 0 ]]
+do
+    case $1 in
+        -n|--namespace)
+            NAMESPACE=$2
+            shift
+            shift
+            ;;
+        -f|--file)
+            CFG_FILE=$2
+            shift
+            shift
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
 
 namespace=$NAMESPACE
 name="pilot-link-ctrlr"

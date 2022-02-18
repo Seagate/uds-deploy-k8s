@@ -8,6 +8,11 @@ pilotlinkctrlr:
     config:
         name: pilot-link-ctrlr-cfg
         file: pilot-link-ctrlr-config.json
+    secret:
+        name: pilot-link-ctrlr-secret
+        lpregurl: notset
+        lpusername: notset
+        lppassword: notset
     nodeselector:
         pilotlinknodelabel: default
     pod:
