@@ -5,11 +5,11 @@
 
 The **UDS Pilot Link** platform consists of the following components:
 1. The **UDS Pilot Link** deployment scripts and helm charts. Repo: [uds-deply-k8s](https://github.com/Seagate/uds-deploy-k8s) (this repo)
-2. The **UDS Pilot Link Controller**, responible for managing the **UDS Pilot Link Data Services**. Repo: [uds-ctrlr-k8s](https://github.com/Seagate/uds-ctrlr-k8s):
+2. The **UDS Pilot Link Controller**, responsible for managing the **UDS Pilot Link Data Services**. Repo: [uds-ctrlr-k8s](https://github.com/Seagate/uds-ctrlr-k8s):
     - Deployment and Updates
     - Registration with Lyve Pilot 
     - Detection of storage
-3. The **UDS Pilot Link Data Service**, responible for connecting with the Lyve Pilot Cloud service and conducting requested data operations. Repo: [uds](https://github.com/Seagate/uds)
+3. The **UDS Pilot Link Data Service**, responsible for connecting with the Lyve Pilot Cloud service and conducting requested data operations. Repo: [uds](https://github.com/Seagate/uds)
 
 ## Table of Contents
 - [UDS Pilot Link on Kubernetes](#uds-pilot-link-on-kubernetes)
@@ -20,10 +20,11 @@ The **UDS Pilot Link** platform consists of the following components:
     - [Building UDS Pilot Link Data Service](#building-uds-pilot-link-data-service)
   - [UDS Pilot Link on Kubernetes Prerequisites](#uds-pilot-link-on-kubernetes-prerequisites)
   - [Deploying Pilot Link on Kubernetes](#deploying-pilot-link-on-kubernetes)
-    - [Labling a Node for Storage Detection](#labling-a-node-for-storage-detection)
+    - [Labelling a Node for Storage Detection](#labelling-a-node-for-storage-detection)
     - [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file)
     - [Deploying UDS Pilot Link](#deploying-uds-pilot-link)
-    - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployemnt](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployemnt)
+    - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
+    - [Destroying a UDS Pilot Link Deployment](#destroying-a-uds-pilot-link-deployment)
 
 ## Building the containers
 Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilot Link Data Service**.
@@ -72,9 +73,9 @@ Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilo
    ```
 
 ## Deploying Pilot Link on Kubernetes
-**UDS Pilot Link** can be depolyed on a single or multi node Kubernetes cluster.
+**UDS Pilot Link** can be deployed on a single or multi node Kubernetes cluster.
 
-### Labling a Node for Storage Detection
+### Labelling a Node for Storage Detection
 If you want to use the **UDS Pilot Link** deployment to detect storage, you will need to label the node so the deployment can be assigned to the designated node
 
 1. This example cluster has 4 nodes:
@@ -146,7 +147,7 @@ We need to find the storage we want to use on `node-1`
    lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c29a266f553d6d67703bef1036ed -> ../../sdd
    ```
    **Note:** the following devices:
-   * `../../sdb` is the ***VM Ware Vitural Disk*** we want to use as ***UDX*** storage
+   * `../../sdb` is the ***VM Ware Virtual Disk*** we want to use as ***UDX*** storage
    * `../../sdh` is the ***JetFlash Transcend 16GB*** USB device we want to use as ***UDX*** storage
    * `../../sdg` is an additional USB device we will use as ***NON-UDX*** storage
  
@@ -172,7 +173,7 @@ We need to find the storage we want to use on `node-1`
 
    ```
    **Note:** the following devices:
-   * `../../sdb` is the ***VM Ware Vitural Disk*** we want to use as ***UDX*** storage
+   * `../../sdb` is the ***VM Ware Virtual Disk*** we want to use as ***UDX*** storage
    * `../../sdh` is the ***JetFlash Transcend 16GB*** USB device we want to use as ***UDX*** storage
    * `../../sdg` is an additional USB device we will use as ***NON-UDX*** storage
  
@@ -182,11 +183,11 @@ We need to find the storage we want to use on `node-1`
    
    The path filter define what devices the **UDS Pilot Link Controller** scans to look for storage devices.
 
-   We add `".*usb-0.*-scsi-0:0.*"` to include all of the UDS devices and `".*pci-0000:00:10.0-scsi-0:0:1:0.*"` to incude the specific ***VM Ware Vitural Disk***. The filters are standard regex.
+   We add `".*usb-0.*-scsi-0:0.*"` to include all of the UDS devices and `".*pci-0000:00:10.0-scsi-0:0:1:0.*"` to include the specific ***VM Ware Virtual Disk***. The filters are standard regex.
 
    **Note:** `dev_exclude` can be used to exclude device paths. `dev_include` takes precedence over `dev_exclude`.
 
-   **Note:** We want the `default_filesystem` to be `ext4` make sure you device is formated with an `ext4` file system. `assignment_mode` is configured as `failover` so all storage is assigned to the first **UDS Pilot Link Data Service** and will be reassigned if the first fails.
+   **Note:** We want the `default_filesystem` to be `ext4` make sure you device is formatted with an `ext4` file system. `assignment_mode` is configured as `failover` so all storage is assigned to the first **UDS Pilot Link Data Service** and will be reassigned if the first fails.
     ```bash
     {
         "version": "2.0",
@@ -211,7 +212,7 @@ We need to find the storage we want to use on `node-1`
    
    The device type mapping filters are used to define if the storage device is to be mapped as ***UDX*** or ***NON-UDX*** storage.
 
-   We add the `vendor_id`, `product_id` and `serial_num` information for the ***VM Ware Vitural Disk*** and ***JetFlash Transcend 16GB*** USB device to the `udx` section and configure `non_udx` for all other devices.
+   We add the `vendor_id`, `product_id` and `serial_num` information for the ***VM Ware Virtual Disk*** and ***JetFlash Transcend 16GB*** USB device to the `udx` section and configure `non_udx` for all other devices.
 
    **Note:** The `vendor_id`, `product_id` and `serial_num` information are derived from the **List the devices by id** section.
    ```bash
@@ -270,9 +271,9 @@ export PILOT_LINK_DS_IMAGE=<myregistry>/udspilotlinkds:x.x.x
 ### Deploying UDS Pilot Link
 The `deploy_pilot_link.sh` script is used to deploy **UDS Pilot Link**. In this example we will deploy a **UDS Pilot Link Controller** and 2 **UDS Pilot Link Data Services** onto `node-1` on the Kubernetes cluster.
 
-We set the namspace to the same as the label `detect1` that we put on `node-1` using the `-n` option. We select the `detect` deployment type with the `-t` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
+We set the namespace to the same as the label `detect1` that we put on `node-1` using the `-n` option. We select the `detect` deployment type with the `-t` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
 
-**Note:** The script will ask for a password for the auto registration feature. The feature is not enabled for Lyve Pilot yet. We `echo noset` for the password to avoid the interactive prompt.
+**Note:** The script will ask for a password for the auto registration feature. The feature is not enabled for Lyve Pilot yet. We `echo notset` for the password to avoid the interactive prompt.
 
 **Note:** Information on the all functions and usage is available by providing the `-h` option
 
@@ -303,7 +304,7 @@ pilot-link-ds-detect-storage1-686c747b6-2cs69    1/1     Running   0          8m
 pilot-link-ds-detect-storage2-74748f9f45-nx827   1/1     Running   0          8m2s
 ```
 
-### Modify a UDS Pilot Link Controller Configuration File on a Running Deployemnt
+### Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
 We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
 
 1. Remove the following from the `pilot-link-ctrlr-config-detect1.json` section `dev_to_type_map` As the device is not listed it will be assigned by the `non_udx` catch all configuration section:
@@ -354,7 +355,7 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     ```
 3.  Modify the **UDS Pilot Link Controller** configuration
    
-    We set the namspace to `detect1` using the `-n` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
+    We set the namespace to `detect1` using the `-n` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
     
     **Note:** Information on the all functions and usage is available by providing the `-h` option
 
@@ -381,10 +382,55 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     ```
     **Note:** You may see a additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
 
-### Destorying a UDS Pilot Link Deployment
-The `destroy_pilot_link.sh` script is used to destroy and previously deployed **UDS Pilot Link** deployment. In this example we will destory the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
+### Updating the UDS Pilot Link Container Images in a Running Deployment
+The `update_pilot_link.sh` script is used to udpate a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
-We set the namspace to `detect1` using the `-n` option.
+We set the namespace to `detect1` using the `-n` option.
+
+**Note:** Information on the all functions and usage is available by providing the `-h` option
+
+1.  Follow section [Setting the Container Registry and Container Version](#setting-the-container-registry-and-container-version) to change the container image environment variables.
+2.  Run the following command:
+    ```bash
+    uds-deploy-k8s/update_pilot_link.sh -n detect1
+    ```
+    ```bash
+    Setting the Data Service image to 192.168.9.164:32000/udspilotlinkds:1.7.0
+    Setting the image for detect1/pilot-link-ctrlr to 192.168.9.164:32000/udspilotlinkctrlr:1.0.0
+    Waiting for the update to be rolled out for detect1/pilot-link-ctrlr
+    .
+    Update rollout was successful for detect1/pilot-link-ctrlr
+    ```
+    Check that the deployment is ready by making sure all pods are up and running with the command:
+    ```bash
+    kubectl get pods -n detect1
+    ```
+    You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `READY` is `1/1` and `STATUS` is `Running`
+    ```bash
+    NAME                                             READY   STATUS    RESTARTS   AGE
+    pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
+    pilot-link-ds-detect-storage1-686c747b6-bt47c    1/1     Running   0          14m
+    pilot-link-ds-detect-storage2-74748f9f45-l7dxw   1/1     Running   0          14m
+    ```
+    **Note:** You may see  additional `pilot-link-ctrlr` and `pilot-link-ds` in the `Terminating` state as the update is completed.
+
+### Collecting Logs from a UDS Pilot Link Deployment
+The `logs_pilot_link.sh` script is used to destroy a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
+
+We set the namespace to `detect1` using the `-n` option.
+
+**Note:** Information on the all functions and usage is available by providing the `-h` option
+
+Run the command:
+```bash
+uds-deploy-k8s/logs_pilot_link.sh -n detect1
+```
+Logs will be collected and displayed in the terminal for `pilot-link-ctrlr` and `pilot-link-ds` that are in the deployment. You can redirect the output to a file using standard linux redirection.
+
+### Destroying a UDS Pilot Link Deployment
+The `destroy_pilot_link.sh` script is used to destroy a previously deployed **UDS Pilot Link** deployment. In this example we will destroy the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
+
+We set the namespace to `detect1` using the `-n` option.
 
 **Note:** Information on the all functions and usage is available by providing the `-h` option
 
