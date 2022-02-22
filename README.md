@@ -12,6 +12,7 @@ The **UDS Pilot Link** platform consists of the following components:
 3. The **UDS Pilot Link Data Service**, responsible for connecting with the Lyve Pilot Cloud service and conducting requested data operations. Repo: [uds](https://github.com/Seagate/uds)
 
 ## Table of Contents
+
 - [UDS Pilot Link on Kubernetes](#uds-pilot-link-on-kubernetes)
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
@@ -22,9 +23,12 @@ The **UDS Pilot Link** platform consists of the following components:
   - [Deploying Pilot Link on Kubernetes](#deploying-pilot-link-on-kubernetes)
     - [Labelling a Node for Storage Detection](#labelling-a-node-for-storage-detection)
     - [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file)
+    - [Setting the Container Registry and Container Version](#setting-the-container-registry-and-container-version)
     - [Deploying UDS Pilot Link](#deploying-uds-pilot-link)
-    - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
-    - [Destroying a UDS Pilot Link Deployment](#destroying-a-uds-pilot-link-deployment)
+  - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
+  - [Updating the UDS Pilot Link Container Images in a Running Deployment](#updating-the-uds-pilot-link-container-images-in-a-running-deployment)
+  - [Collecting Logs from a UDS Pilot Link Deployment](#collecting-logs-from-a-uds-pilot-link-deployment)
+  - [Destroying a UDS Pilot Link Deployment](#destroying-a-uds-pilot-link-deployment)
 
 ## Building the containers
 Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilot Link Data Service**.
@@ -304,7 +308,7 @@ pilot-link-ds-detect-storage1-686c747b6-2cs69    1/1     Running   0          8m
 pilot-link-ds-detect-storage2-74748f9f45-nx827   1/1     Running   0          8m2s
 ```
 
-### Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
+## Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
 We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
 
 1. Remove the following from the `pilot-link-ctrlr-config-detect1.json` section `dev_to_type_map` As the device is not listed it will be assigned by the `non_udx` catch all configuration section:
@@ -382,7 +386,7 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     ```
     **Note:** You may see a additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
 
-### Updating the UDS Pilot Link Container Images in a Running Deployment
+## Updating the UDS Pilot Link Container Images in a Running Deployment
 The `update_pilot_link.sh` script is used to udpate a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
 We set the namespace to `detect1` using the `-n` option.
@@ -414,7 +418,7 @@ We set the namespace to `detect1` using the `-n` option.
     ```
     **Note:** You may see  additional `pilot-link-ctrlr` and `pilot-link-ds` in the `Terminating` state as the update is completed.
 
-### Collecting Logs from a UDS Pilot Link Deployment
+## Collecting Logs from a UDS Pilot Link Deployment
 The `logs_pilot_link.sh` script is used to destroy a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
 We set the namespace to `detect1` using the `-n` option.
@@ -427,7 +431,7 @@ uds-deploy-k8s/logs_pilot_link.sh -n detect1
 ```
 Logs will be collected and displayed in the terminal for `pilot-link-ctrlr` and `pilot-link-ds` that are in the deployment. You can redirect the output to a file using standard linux redirection.
 
-### Destroying a UDS Pilot Link Deployment
+## Destroying a UDS Pilot Link Deployment
 The `destroy_pilot_link.sh` script is used to destroy a previously deployed **UDS Pilot Link** deployment. In this example we will destroy the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
 We set the namespace to `detect1` using the `-n` option.
