@@ -1,0 +1,40 @@
+{
+    "version": "2.0",
+    "service_config": {
+        "StorageCtrlrService": {
+            "period": 5,
+            "storage_config": {
+                "assignment_mode": "failover",
+                "default_filesystem": "ext4",
+                "dev_include": [
+                    ".*usb-0.*-scsi-0:0.*",
+                    ".*pci-0000:00:10.0-scsi-0:0:1:0.*"
+                ],
+                "dev_exclude": [
+                    ".*"
+                ],
+                "dev_to_type_map": {
+                    "udx": [
+                        {
+                            "vendor_id": ".*JetFlash.*",
+                            "product_id": ".*Transcend 16GB.*",
+                            "serial_num": ".*2822188912.*"
+                        },
+                        {
+                            "vendor_id": ".*VMware.*",
+                            "product_id": ".*VMware Virtual S.*",
+                            "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+                        }
+                    ],
+                    "non_udx": [
+                        {
+                            "vendor_id": ".*",
+                            "product_id": ".*",
+                            "serial_num": ".*"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

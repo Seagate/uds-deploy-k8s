@@ -1,0 +1,15 @@
+{
+    "version": "2.0",
+    "service_config": {        
+        "StorageCtrlrService": {
+            "period": 5,
+            "storage_config": {
+                "assignment_mode": "failover",
+                "default_filesystem": "ext4",
+                "dev_exclude": [
+                    ".*"
+                ]
+            }
+        }
+    }
+}

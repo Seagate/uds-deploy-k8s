@@ -1,0 +1,16 @@
+udx:
+  version: CES-2020
+  revision: 0.1.0
+udsdeploy:
+  revision:
+    major: 1
+    minor: 0
+    subminor: 0
+  qualifier:
+    - development
+  created_timestamp:
+  updated_timestamp:
+  branch:
+  git_commit:
+  build_number:
+  docker_image:
