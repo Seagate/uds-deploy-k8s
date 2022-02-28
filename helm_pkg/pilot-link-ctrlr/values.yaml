@@ -10,8 +10,6 @@ pilotlinkctrlr:
         file: pilot-link-ctrlr-config.json
     secret:
         name: pilot-link-ctrlr-secret
-        lpapiurl: notset
-        lpusername: notset
         lppassword: notset
     nodeselector:
         pilotlinknodelabel: default
@@ -36,6 +34,5 @@ pilotlinkctrlr:
         hostsys:
             name: pilot-link-ctrlr-hostsys
     dataservices:
-        numof: '1'
         type: 'detect'
         image: ghcr.io/seagate/udspilotlinkds:0.1.0
