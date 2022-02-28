@@ -22,7 +22,8 @@ The **UDS Pilot Link** platform consists of the following components:
   - [UDS Pilot Link on Kubernetes Prerequisites](#uds-pilot-link-on-kubernetes-prerequisites)
   - [Deploying Pilot Link on Kubernetes](#deploying-pilot-link-on-kubernetes)
     - [Labelling a Node for Storage Detection](#labelling-a-node-for-storage-detection)
-    - [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file)
+    - [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection)
+    - [Defining a UDS Pilot Link Controller Configuration File for Auto Registration](#defining-a-uds-pilot-link-controller-configuration-file-for-auto-registration)
     - [Setting the Container Registry and Container Version](#setting-the-container-registry-and-container-version)
     - [Deploying UDS Pilot Link](#deploying-uds-pilot-link)
   - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
@@ -105,7 +106,7 @@ If you want to use the **UDS Pilot Link** deployment to detect storage, you will
    NAME     STATUS   ROLES    AGE    VERSION   LABELS
    node-1   Ready    <none>   186d   v1.23.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node-1,kubernetes.io/os=linux,pilotLinkNodeLabel=detect1,topology.jiva.openebs.io/nodeName=node-1
    ```
-### Defining a UDS Pilot Link Controller Configuration File
+### Defining a UDS Pilot Link Controller Configuration File for Storage Detection
 If you wan to use the **UDS Pilot Link** deployment to detect storage, you will need to create **UDS Pilot Link Controller** configuration file based off of [`pilot-link-ctrlr-config.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/pilot-link-ctrlr-config.json) and modify the `StorageCtrlrService` -> `storage_config` section. An example can be found at [`pilot-link-ctrlr-config-example.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/examples/pilot-link-ctrlr-config-example.json).
 
 In this example we will configure a `pilot-link-ctrlr-config-detect1.json` configuration file for `node-1` label `pilotLinkNodeLabel=detect1` that assigns the following storage:
@@ -262,6 +263,35 @@ We need to find the storage we want to use on `node-1`
     }
     ```
 
+### Defining a UDS Pilot Link Controller Configuration File for Auto Registration
+
+If you want the **UDS Pilot Link Controller** to automatically regsiter **UDS Pilot Link Data Services** with Lyve Pilot you need to provide details of you Lyve Pilot account in the `RegistrationCtrlrService` section of your configuration file. An example can be found at `pilot-link-ctrlr-config-example.json`.
+
+**Note:** This section of the configuration file is in addition to the `StorageCtrlrService` section defined in [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection)
+
+In this example we have configured the `auto_registration_mode` as `serial`. 
+
+Options are: 
+* `parallel` register discovered **UDS Pilot Link Data Services** without waiting for each to finish.
+* `serial` wait for a **UDS Pilot Link Data Services** to complete registration before moving onto the next one.
+* `off` do not auto register discovered **UDS Pilot Link Data Services**.
+
+Provide the `api_url` and `username` of your Lyve Pilot account in the `'lp_account` section. For security, the password is requested at time of deployment, so it is not stored in a file..
+```bash
+{
+    "version": "2.0",
+    "service_config": {
+        "RegistrationCtrlrService": {
+            "auto_registration_mode": "serial",
+            "lp_account": {
+                "api_url": "https://api.lyve.seagate.com/accountuuid",
+                "username": "my.email@mycompany.com"
+            }
+        }
+    }
+}
+```
+
 ### Setting the Container Registry and Container Version
 Before deploying **UDS Pilot Link** you need to set the container registry and container version for the **UDS Pilot Link Controller** and **UDS Pilot Link Data Service**. This is done by exporting the environment variables `PILOT_LINK_CTRLR_IMAGE` and `PILOT_LINK_DS_IMAGE`. Replace `<myregistry>` with the registry you are using and `x.x.x` with the code version:
 
@@ -309,7 +339,9 @@ pilot-link-ds-detect-storage2-74748f9f45-nx827   1/1     Running   0          8m
 ```
 
 ## Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
-We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining a UDS Pilot Link Controller Configuration File](#defining-a-uds-pilot-link-controller-configuration-file) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
+We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
+
+**Note:** If you have provided auto registration details as defined in section [Defining a UDS Pilot Link Controller Configuration File for Auto Registration](#defining-a-uds-pilot-link-controller-configuration-file-for-auto-registration) make sure this is present in the modified configuration file.
 
 1. Remove the following from the `pilot-link-ctrlr-config-detect1.json` section `dev_to_type_map` As the device is not listed it will be assigned by the `non_udx` catch all configuration section:
    ```bash
@@ -319,11 +351,18 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
         "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
    } 
    ```
-2. The configuration file should now be as follows:
+2. The configuration file should now be as follows for the `StorageCtrlrService` section:
    ```bash
    {
         "version": "2.0",
         "service_config": {
+            "RegistrationCtrlrService": {
+                "auto_registration_mode": "serial",
+                "lp_account": {
+                    "api_url": "https://api.lyve.seagate.com/accountuuid",
+                    "username": "my.email@mycompany.com"
+                }
+            },
             "StorageCtrlrService": {
                 "period": 5,
                 "storage_config": {
