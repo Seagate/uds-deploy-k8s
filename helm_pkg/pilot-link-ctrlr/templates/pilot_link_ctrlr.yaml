@@ -41,8 +41,6 @@ metadata:
   namespace: {{ .Values.namespace }}
 type: Opaque
 stringData:
-  lpapiurl: {{ .Values.pilotlinkctrlr.secret.lpapiurl }}
-  lpusername: {{ .Values.pilotlinkctrlr.secret.lpusername }}
   lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword }}
 ---
 apiVersion: apps/v1

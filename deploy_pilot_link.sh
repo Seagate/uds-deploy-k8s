@@ -115,7 +115,7 @@ fi
 
 if [[ $TYPE == "detect" ]]
 then
-    pv_storage_name=$namespace"-pilot-link-ctrlr-hostpath"
+    pv_storage_name=$namespace"-pilot-link-ctrlr-detection"
     pv_storage_hostpath="/mnt/pilot-link/storage/"$namespace
     pv_hostdevices_name=$namespace"-pilot-link-ctrlr-hostdevices"
     pv_hostsys_name=$namespace"-pilot-link-ctrlr-hostsys"

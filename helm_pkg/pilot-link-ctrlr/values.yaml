@@ -10,8 +10,6 @@ pilotlinkctrlr:
         file: pilot-link-ctrlr-config.json
     secret:
         name: pilot-link-ctrlr-secret
-        lpapiurl: notset
-        lpusername: notset
         lppassword: notset
     nodeselector:
         pilotlinknodelabel: default
@@ -20,7 +18,7 @@ pilotlinkctrlr:
         mountpath: /pilot-link/storage
     pv:
         storage:
-            name: pilot-link-ctrlr-hostpath
+            name: pilot-link-ctrlr-detection
             storage: 1Gi
             hostpath: /mnt/pilot-link/storage
         hostdevices:
@@ -29,13 +27,12 @@ pilotlinkctrlr:
             name: pilot-link-ctrlr-hostsys
     pvc:
         storage:
-            name: pilot-link-ctrlr-hostpath
+            name: pilot-link-ctrlr-detection
             storage: 1Gi
         hostdevices:
             name: pilot-link-ctrlr-hostdevices
         hostsys:
             name: pilot-link-ctrlr-hostsys
     dataservices:
-        numof: '1'
         type: 'detect'
         image: ghcr.io/seagate/udspilotlinkds:0.1.0
