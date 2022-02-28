@@ -1,6 +1,13 @@
 {
     "version": "2.0",
-    "service_config": {        
+    "service_config": {     
+        "RegistrationCtrlrService": {
+            "auto_registration_mode": "serial",
+            "lp_account": {
+                "api_url": "notset",
+                "username": "notset"
+            }
+        },   
         "StorageCtrlrService": {
             "period": 5,
             "storage_config": {
