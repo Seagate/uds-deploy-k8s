@@ -89,22 +89,10 @@ spec:
           - name: PILOT_LINK_CTRLR_MNT_BASE
             value: {{ .Values.pilotlinkctrlr.pod.mountpath }}
           {{- end }}
-          - name: PILOT_LINK_DS_NUMOF
-            value: {{ .Values.pilotlinkctrlr.dataservices.numof | quote }}
           - name: PILOT_LINK_DS_TYPE
             value: {{ .Values.pilotlinkctrlr.dataservices.type | quote }}
           - name: PILOT_LINK_DS_IMAGE
             value: {{ .Values.pilotlinkctrlr.dataservices.image | quote }}
-          - name: LYVE_PILOT_API_URL
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pilotlinkctrlr.secret.name }}
-                key: lpapiurl
-          - name: LYVE_PILOT_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.pilotlinkctrlr.secret.name }}
-                key: lpusername
           - name: LYVE_PILOT_PASSWORD
             valueFrom:
               secretKeyRef:
