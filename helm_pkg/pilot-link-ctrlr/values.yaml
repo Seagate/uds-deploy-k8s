@@ -18,7 +18,7 @@ pilotlinkctrlr:
         mountpath: /pilot-link/storage
     pv:
         storage:
-            name: pilot-link-ctrlr-hostpath
+            name: pilot-link-ctrlr-detection
             storage: 1Gi
             hostpath: /mnt/pilot-link/storage
         hostdevices:
@@ -27,7 +27,7 @@ pilotlinkctrlr:
             name: pilot-link-ctrlr-hostsys
     pvc:
         storage:
-            name: pilot-link-ctrlr-hostpath
+            name: pilot-link-ctrlr-detection
             storage: 1Gi
         hostdevices:
             name: pilot-link-ctrlr-hostdevices
