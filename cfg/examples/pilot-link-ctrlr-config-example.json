@@ -42,6 +42,21 @@
                     ]
                 }
             }
+        },
+        "DeployCtrlrService": {
+            "period": 5,
+            "num_data_services": 2,
+            "storage_config": {
+                "storage_class": "my_storage_class",
+                "udx": {
+                    "num": 1,
+                    "size": "1Gi"
+                },
+                "non-udx": {
+                    "num": 1,
+                    "size": "1Gi"
+                }
+            }
         }
     }
 }

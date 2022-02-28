@@ -17,7 +17,7 @@ pilotlinkctrlr:
         image: ghcr.io/seagate/udspilotlinkctrlr:0.1.0
         mountpath: /pilot-link/storage
     pv:
-        storage:
+        detection:
             name: pilot-link-ctrlr-detection
             storage: 1Gi
             hostpath: /mnt/pilot-link/storage
@@ -26,7 +26,7 @@ pilotlinkctrlr:
         hostsys:
             name: pilot-link-ctrlr-hostsys
     pvc:
-        storage:
+        detection:
             name: pilot-link-ctrlr-detection
             storage: 1Gi
         hostdevices:

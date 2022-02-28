@@ -63,9 +63,9 @@ spec:
           configMap: 
             name: {{ .Values.pilotlinkctrlr.config.name }}
         {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
-        - name: {{ .Values.pilotlinkctrlr.pv.storage.name }}
+        - name: {{ .Values.pilotlinkctrlr.pv.detection.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.pilotlinkctrlr.pvc.storage.name }}
+            claimName: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
         - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
@@ -101,7 +101,7 @@ spec:
             - name: {{ .Values.pilotlinkctrlr.config.name }}
               mountPath: /etc/udsctrlr
             {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
-            - name: {{ .Values.pilotlinkctrlr.pv.storage.name }}
+            - name: {{ .Values.pilotlinkctrlr.pv.detection.name }}
               mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
               mountPropagation: Bidirectional
             - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}

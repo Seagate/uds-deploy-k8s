@@ -334,8 +334,8 @@ You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `RE
 ```bash
 NAME                                             READY   STATUS    RESTARTS   AGE
 pilot-link-ctrlr-6b7745f8dd-7dh7c                1/1     Running   0          8m36s
-pilot-link-ds-detect-storage1-686c747b6-2cs69    1/1     Running   0          8m2s
-pilot-link-ds-detect-storage2-74748f9f45-nx827   1/1     Running   0          8m2s
+pilot-link-ds1-686c747b6-2cs69                   1/1     Running   0          8m2s
+pilot-link-ds2-74748f9f45-nx827                  1/1     Running   0          8m2s
 ```
 
 ## Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
@@ -420,8 +420,8 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     ```bash
     NAME                                             READY   STATUS    RESTARTS   AGE
     pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
-    pilot-link-ds-detect-storage1-686c747b6-bt47c    1/1     Running   0          14m
-    pilot-link-ds-detect-storage2-74748f9f45-l7dxw   1/1     Running   0          14m
+    pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
+    pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
     ```
     **Note:** You may see a additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
 
@@ -452,8 +452,8 @@ We set the namespace to `detect1` using the `-n` option.
     ```bash
     NAME                                             READY   STATUS    RESTARTS   AGE
     pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
-    pilot-link-ds-detect-storage1-686c747b6-bt47c    1/1     Running   0          14m
-    pilot-link-ds-detect-storage2-74748f9f45-l7dxw   1/1     Running   0          14m
+    pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
+    pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
     ```
     **Note:** You may see  additional `pilot-link-ctrlr` and `pilot-link-ds` in the `Terminating` state as the update is completed.
 

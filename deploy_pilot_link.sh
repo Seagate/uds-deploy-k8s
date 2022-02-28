@@ -19,7 +19,7 @@ do
             printf "  export PILOT_LINK_DS_IMAGE=mycontaineregistry/udspilotlinkds:x.x.x\n"
             printf "  export PILOT_LINK_CTRLR_IMAGE=mycontaineregistry/udspilotlinkctrlr:x.x.x\n"
             printf "\n"
-            printf "NOTE: A password will be asked for on execusion. This can be ignored if manual registration is being used\n"
+            printf "NOTE: A password will be asked for on execution. This can be ignored if manual registration is being used\n"
             printf "\n"
             printf "Examples:\n"
             printf "  # Deploy a Pilot Link deployment with storage detection disabled\n"
@@ -36,7 +36,7 @@ do
             printf "      -n, --namespace: The namespace for the deployment. The namespace will be created. This MUST be provided\n"
             printf "      -d, --detect: Enables storage detection on the kubernetes node. If not provide the storage detecion feature is disabled \n"
             printf "      -f, --file: The configuration file to use for the deployment. Defaults to cfg/pilot-link-ctrlr-config.json\n"
-            printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by \"detect\" to attach the deployment to the intended node\n"
+            printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -d|--detect to attach the deployment to the intended node\n"
             printf "for storage detection. Assumes pilotLinkNodeLabel is set as the same as the namespace if not provided\n"
             printf "\n"
             printf "Usage:\n"
@@ -115,8 +115,8 @@ fi
 
 if [[ $TYPE == "detect" ]]
 then
-    pv_storage_name=$namespace"-pilot-link-ctrlr-detection"
-    pv_storage_hostpath="/mnt/pilot-link/storage/"$namespace
+    pv_detection_name=$namespace"-pilot-link-ctrlr-detection"
+    pv_detection_hostpath="/mnt/pilot-link/storage/"$namespace
     pv_hostdevices_name=$namespace"-pilot-link-ctrlr-hostdevices"
     pv_hostsys_name=$namespace"-pilot-link-ctrlr-hostsys"
     
@@ -126,8 +126,8 @@ then
         --set namespace=$namespace \
         --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
         --set pilotlinkctrlr.nodeselector.pilotlinknodelabel=$pilotlinknodelabel \
-        --set pilotlinkctrlr.pv.storage.name=$pv_storage_name \
-        --set pilotlinkctrlr.pv.storage.hostpath=$pv_storage_hostpath \
+        --set pilotlinkctrlr.pv.detection.name=$pv_detection_name \
+        --set pilotlinkctrlr.pv.detection.hostpath=$pv_detection_hostpath \
         --set pilotlinkctrlr.pv.hostdevices.name=$pv_hostdevices_name \
         --set pilotlinkctrlr.pv.hostsys.name=$pv_hostsys_name \
         --set pilotlinkctrlr.dataservices.type=$TYPE \
