@@ -12,7 +12,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Values.pilotlinkctrlr.clusterrolebinding.name }}
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrolebinding.name }}
   namespace: {{ .Values.namespace }}
 subjects:
   - kind: ServiceAccount
@@ -63,13 +63,13 @@ spec:
           configMap: 
             name: {{ .Values.pilotlinkctrlr.config.name }}
         {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
-        - name: {{ .Values.pilotlinkctrlr.pv.detection.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
-        - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
-        - name: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
         {{- end }}
@@ -101,13 +101,13 @@ spec:
             - name: {{ .Values.pilotlinkctrlr.config.name }}
               mountPath: /etc/udsctrlr
             {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
-            - name: {{ .Values.pilotlinkctrlr.pv.detection.name }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
               mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
               mountPropagation: Bidirectional
-            - name: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
               mountPath: /hostdev
               mountPropagation: HostToContainer
-            - name: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
               mountPath: /hostsys
               mountPropagation: HostToContainer
             {{- end }}

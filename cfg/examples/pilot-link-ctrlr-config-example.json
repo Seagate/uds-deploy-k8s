@@ -48,12 +48,10 @@
             "num_data_services": 2,
             "storage_config": {
                 "udx": {
-                    "num": 1,
                     "size": "1Gi",
                     "storage_class": "my_storage_class"
                 },
                 "non_udx": {
-                    "num": 1,
                     "size": "1Gi",
                     "storage_class": "my_storage_class"
                 }

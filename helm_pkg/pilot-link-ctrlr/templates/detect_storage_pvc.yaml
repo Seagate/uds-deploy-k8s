@@ -12,7 +12,7 @@ spec:
     requests:
       storage: {{ .Values.pilotlinkctrlr.pvc.detection.storage }}
   storageClassName: manual
-  volumeName: {{ .Values.pilotlinkctrlr.pv.detection.name }}
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.detection.name }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -27,7 +27,7 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: manual
-  volumeName: {{ .Values.pilotlinkctrlr.pv.hostdevices.name }}
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdevices.name }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -42,5 +42,5 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: manual
-  volumeName: {{ .Values.pilotlinkctrlr.pv.hostsys.name }}
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostsys.name }}
 {{- end }}
