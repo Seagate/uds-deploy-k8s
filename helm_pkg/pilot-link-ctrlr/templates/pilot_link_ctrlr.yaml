@@ -119,4 +119,3 @@ spec:
         pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
       {{- end }}
       serviceAccountName: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
-
