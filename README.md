@@ -22,8 +22,9 @@ The **UDS Pilot Link** platform consists of the following components:
   - [UDS Pilot Link on Kubernetes Prerequisites](#uds-pilot-link-on-kubernetes-prerequisites)
   - [Deploying Pilot Link on Kubernetes](#deploying-pilot-link-on-kubernetes)
     - [Labelling a Node for Storage Detection](#labelling-a-node-for-storage-detection)
-    - [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection)
-    - [Defining a UDS Pilot Link Controller Configuration File for Auto Registration](#defining-a-uds-pilot-link-controller-configuration-file-for-auto-registration)
+    - [Defining Storage Detection in the UDS Pilot Link Controller Configuration File](#defining-storage-detection-in-the-uds-pilot-link-controller-configuration-file)
+    - [Defining Auto Registration in the UDS Pilot Link Controller Configuration File](#defining-auto-registration-in-the-uds-pilot-link-controller-configuration-file)
+    - [Defining a Storage Provisioner in the UDS Pilot Link Configuration File](#defining-a-storage-provisioner-in-the-uds-pilot-link-configuration-file)
     - [Setting the Container Registry and Container Version](#setting-the-container-registry-and-container-version)
     - [Deploying UDS Pilot Link](#deploying-uds-pilot-link)
   - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
@@ -106,7 +107,7 @@ If you want to use the **UDS Pilot Link** deployment to detect storage, you will
    NAME     STATUS   ROLES    AGE    VERSION   LABELS
    node-1   Ready    <none>   186d   v1.23.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node-1,kubernetes.io/os=linux,pilotLinkNodeLabel=detect1,topology.jiva.openebs.io/nodeName=node-1
    ```
-### Defining a UDS Pilot Link Controller Configuration File for Storage Detection
+### Defining Storage Detection in the UDS Pilot Link Controller Configuration File
 If you wan to use the **UDS Pilot Link** deployment to detect storage, you will need to create **UDS Pilot Link Controller** configuration file based off of [`pilot-link-ctrlr-config.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/pilot-link-ctrlr-config.json) and modify the `StorageCtrlrService` -> `storage_config` section. An example can be found at [`pilot-link-ctrlr-config-example.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/examples/pilot-link-ctrlr-config-example.json).
 
 In this example we will configure a `pilot-link-ctrlr-config-detect1.json` configuration file for `node-1` label `pilotLinkNodeLabel=detect1` that assigns the following storage:
@@ -239,14 +240,14 @@ We need to find the storage we want to use on `node-1`
                     "dev_to_type_map": {
                         "udx": [
                             {
-                                "vendor_id": ".*JetFlash.*",
-                                "product_id": ".*Transcend 16GB.*",
-                                "serial_num": ".*2822188912.*"
+                                "vendor_id": "JetFlash",
+                                "product_id": "Transcend 16GB",
+                                "serial_num": "2822188912"
                             },
                             {
-                                "vendor_id": ".*VMware.*",
-                                "product_id": ".*VMware Virtual S.*",
-                                "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+                                "vendor_id": "VMware,",
+                                "product_id": "VMware Virtual S",
+                                "serial_num": "c2962b122a6c3779e38cab08e146"
                             }   
                         ],
                         "non_udx": [
@@ -263,11 +264,11 @@ We need to find the storage we want to use on `node-1`
     }
     ```
 
-### Defining a UDS Pilot Link Controller Configuration File for Auto Registration
+### Defining Auto Registration in the UDS Pilot Link Controller Configuration File
 
 If you want the **UDS Pilot Link Controller** to automatically regsiter **UDS Pilot Link Data Services** with Lyve Pilot you need to provide details of you Lyve Pilot account in the `RegistrationCtrlrService` section of your configuration file. An example can be found at `pilot-link-ctrlr-config-example.json`.
 
-**Note:** This section of the configuration file is in addition to the `StorageCtrlrService` section defined in [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection)
+**Note:** This section of the configuration file is in addition to the `StorageCtrlrService` section defined in [Defining Storage Detection in the UDS Pilot Link Controller Configuration File](#defining-storage-detection-in-the-uds-pilot-link-controller-configuration-file)
 
 In this example we have configured the `auto_registration_mode` as `serial`. 
 
@@ -276,7 +277,7 @@ Options are:
 * `serial` wait for a **UDS Pilot Link Data Services** to complete registration before moving onto the next one.
 * `off` do not auto register discovered **UDS Pilot Link Data Services**.
 
-Provide the `api_url` and `username` of your Lyve Pilot account in the `'lp_account` section. For security, the password is requested at time of deployment, so it is not stored in a file..
+Provide the `api_url` and `username` of your Lyve Pilot account in the `'lp_account` section. For security, the password is requested at time of deployment, so it is not stored in a file.
 ```bash
 {
     "version": "2.0",
@@ -292,6 +293,50 @@ Provide the `api_url` and `username` of your Lyve Pilot account in the `'lp_acco
 }
 ```
 
+### Defining a Storage Provisioner in the UDS Pilot Link Configuration File
+
+A storage provisioner can be used to define fixed storage volume claims for the **UDS Pilot Data Services** to use for ***NON-UDX*** and ***UDX*** storage.
+
+Examples are:
+* [Seagate CSI dynamic provisioner for Kubernetes](https://github.com/Seagate/seagate-exos-x-csi)
+* [Rancher Local Path Provisioner](https://github.com/rancher/local-path-provisioner)
+
+We will use [Rancher Local Path Provisioner](https://github.com/rancher/local-path-provisioner) in this example.
+
+If you want the **UDS Pilot Link Data Services** to have storage allocated by a storage provisioner you need to provide details in the `DeployCtrlrService` section of your configuration file. An example can be found at `pilot-link-ctrlr-config-example.json`.
+
+1.  Follow the instructions at [here](https://github.com/rancher/local-path-provisioner#deployment) to deploy Rancher Local Provisioner.
+2.  Check the provisioner has been deployed with the following command:
+    ```bash
+    kubectl get storageclass
+    ```
+    ```bash
+    NAME         PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+    local-path   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  30h
+    ```
+3.  We want to allocate a ***NON-UDX*** volume of `10Gi` and a ***UDX*** volume of `20Gi` using the storage class `local-path` that corresponds to the Rancher Local Provisioner that is deployed. The `DeployCtrlrService` `storage_config` section should be updated as follows:
+    ```bash
+    {
+        "version": "2.0",
+        "service_config": {
+            "RegistrationCtrlrService": {
+                "period": 5,
+                "num_data_services": 2,
+                "storage_config": {
+                    "udx": {
+                        "size": "20Gi",
+                        "storage_class": "local-path"
+                    },
+                    "non_udx": {
+                        "size": "10Gi",
+                        "storage_class": "local-path"
+                    }
+                }
+            }
+        }
+    }
+    ```
+    **Note:** As `num_data_services` is set to `2`, this will result in 1 ***NON-UDX*** and 1 ***UDX*** volume being allocated to each of the 2 **UDS Pilot Link Data Services**. 
 ### Setting the Container Registry and Container Version
 Before deploying **UDS Pilot Link** you need to set the container registry and container version for the **UDS Pilot Link Controller** and **UDS Pilot Link Data Service**. This is done by exporting the environment variables `PILOT_LINK_CTRLR_IMAGE` and `PILOT_LINK_DS_IMAGE`. Replace `<myregistry>` with the registry you are using and `x.x.x` with the code version:
 
@@ -334,21 +379,21 @@ You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `RE
 ```bash
 NAME                                             READY   STATUS    RESTARTS   AGE
 pilot-link-ctrlr-6b7745f8dd-7dh7c                1/1     Running   0          8m36s
-pilot-link-ds-detect-storage1-686c747b6-2cs69    1/1     Running   0          8m2s
-pilot-link-ds-detect-storage2-74748f9f45-nx827   1/1     Running   0          8m2s
+pilot-link-ds1-686c747b6-2cs69                   1/1     Running   0          8m2s
+pilot-link-ds2-74748f9f45-nx827                  1/1     Running   0          8m2s
 ```
 
 ## Modify a UDS Pilot Link Controller Configuration File on a Running Deployment
-We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining a UDS Pilot Link Controller Configuration File for Storage Detection](#defining-a-uds-pilot-link-controller-configuration-file-for-storage-detection) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
+We will update the configuration file `pilot-link-ctrlr-config-detect1.json` created in section [Defining Storage Detection in the UDS Pilot Link Controller Configuration File](#defining-storage-detection-in-the-uds-pilot-link-controller-configuration-file) to assign the ***VM Ware Virtual Disk*** to be ***NON-UDX*** storage instead of ***UDX*** storage.
 
-**Note:** If you have provided auto registration details as defined in section [Defining a UDS Pilot Link Controller Configuration File for Auto Registration](#defining-a-uds-pilot-link-controller-configuration-file-for-auto-registration) make sure this is present in the modified configuration file.
+**Note:** If you have provided auto registration details as defined in section [Defining Auto Registration in the UDS Pilot Link Controller Configuration File](#defining-auto-registration-in-the-uds-pilot-link-controller-configuration-file) make sure this is present in the modified configuration file.
 
 1. Remove the following from the `pilot-link-ctrlr-config-detect1.json` section `dev_to_type_map` As the device is not listed it will be assigned by the `non_udx` catch all configuration section:
    ```bash
    {   
-        "vendor_id": ".*VMware.*",
-        "product_id": ".*VMware Virtual S.*",
-        "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+        "vendor_id": "VMware,",
+        "product_id": "VMware Virtual S",
+        "serial_num": "c2962b122a6c3779e38cab08e146"
    } 
    ```
 2. The configuration file should now be as follows for the `StorageCtrlrService` section:
@@ -356,13 +401,6 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
    {
         "version": "2.0",
         "service_config": {
-            "RegistrationCtrlrService": {
-                "auto_registration_mode": "serial",
-                "lp_account": {
-                    "api_url": "https://api.lyve.seagate.com/accountuuid",
-                    "username": "my.email@mycompany.com"
-                }
-            },
             "StorageCtrlrService": {
                 "period": 5,
                 "storage_config": {
@@ -378,9 +416,9 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
                     "dev_to_type_map": {
                         "udx": [
                             {
-                                "vendor_id": ".*JetFlash.*",
-                                "product_id": ".*Transcend 16GB.*",
-                                "serial_num": ".*2822188912.*"
+                                "vendor_id": "JetFlash",
+                                "product_id": "Transcend 16GB",
+                                "serial_num": "2822188912"
                             }
                         ],
                         "non_udx": [
@@ -420,8 +458,8 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     ```bash
     NAME                                             READY   STATUS    RESTARTS   AGE
     pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
-    pilot-link-ds-detect-storage1-686c747b6-bt47c    1/1     Running   0          14m
-    pilot-link-ds-detect-storage2-74748f9f45-l7dxw   1/1     Running   0          14m
+    pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
+    pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
     ```
     **Note:** You may see a additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
 
@@ -452,8 +490,8 @@ We set the namespace to `detect1` using the `-n` option.
     ```bash
     NAME                                             READY   STATUS    RESTARTS   AGE
     pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
-    pilot-link-ds-detect-storage1-686c747b6-bt47c    1/1     Running   0          14m
-    pilot-link-ds-detect-storage2-74748f9f45-l7dxw   1/1     Running   0          14m
+    pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
+    pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
     ```
     **Note:** You may see  additional `pilot-link-ctrlr` and `pilot-link-ds` in the `Terminating` state as the update is completed.
 

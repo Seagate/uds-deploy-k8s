@@ -23,14 +23,14 @@
                 "dev_to_type_map": {
                     "udx": [
                         {
-                            "vendor_id": ".*JetFlash.*",
-                            "product_id": ".*Transcend 16GB.*",
-                            "serial_num": ".*2822188912.*"
+                            "vendor_id": "JetFlash",
+                            "product_id": "Transcend 16GB",
+                            "serial_num": "2822188912"
                         },
                         {
-                            "vendor_id": ".*VMware.*",
-                            "product_id": ".*VMware Virtual S.*",
-                            "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+                            "vendor_id": "VMware,",
+                            "product_id": "VMware Virtual S",
+                            "serial_num": "c2962b122a6c3779e38cab08e146"
                         }
                     ],
                     "non_udx": [
@@ -40,6 +40,20 @@
                             "serial_num": ".*"
                         }
                     ]
+                }
+            }
+        },
+        "DeployCtrlrService": {
+            "period": 5,
+            "num_data_services": 2,
+            "storage_config": {
+                "udx": {
+                    "size": "1Gi",
+                    "storage_class": "my_storage_class"
+                },
+                "non_udx": {
+                    "size": "1Gi",
+                    "storage_class": "my_storage_class"
                 }
             }
         }
