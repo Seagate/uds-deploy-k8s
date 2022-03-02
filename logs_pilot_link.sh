@@ -21,7 +21,7 @@ do
             printf "provided logs will be dumped for all deployments\n"
             printf "\n"
             printf "Usage:\n"
-            printf "  modify_pilot_link.sh [options]\n"
+            printf "  logs_pilot_link.sh [options]\n"
             printf "\n"
             exit 1
             ;;
@@ -43,18 +43,49 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}"
 
-NAME=${1:-"pilot-link-"}
-
 namespace=$NAMESPACE
-name=$NAME
+name_all="pilot-link-"
+name_ctrlr="pilot-link-ctrlr"
+
+if [[ $namespace == "" ]]
+then
+    DEPOLYMENT_ELEMS=$(kubectl get deployments -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name -A | grep $name_ctrlr)
+else
+    DEPOLYMENT_ELEMS=$(kubectl get deployments -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name | grep $name_ctrlr)
+fi
+
+IDX=0
+for DEPOLYMENT_ELEM in $DEPOLYMENT_ELEMS
+do
+    if [ $IDX == 0 ]
+    then
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        printf "START of get for $DEPOLYMENT_ELEM\n"
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        kubectl get serviceaccounts,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM -o wide
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        printf "END of get for $DEPOLYMENT_ELEM\n"
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        printf "START of describe for $DEPOLYMENT_ELEM\n"
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        kubectl describe serviceaccounts,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        printf "END of describe for $DEPOLYMENT_ELEM\n"
+        printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        ((IDX++))
+    else
+        IDX=0
+    fi
+done
 
 declare -a DEPLOYMENT_ARRAY
 
 if [[ $namespace == "" ]]
 then    
-    DEPOLYMENT_ELEMS=$(kubectl get deployments -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name -A | grep $name)
+    DEPOLYMENT_ELEMS=$(kubectl get deployments -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name -A | grep $name_all)
 else
-    DEPOLYMENT_ELEMS=$(kubectl get deployments -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name | grep $name)
+    DEPOLYMENT_ELEMS=$(kubectl get deployments -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name | grep $name_all)
 fi
 
 IDX=0
