@@ -239,14 +239,14 @@ We need to find the storage we want to use on `node-1`
                     "dev_to_type_map": {
                         "udx": [
                             {
-                                "vendor_id": ".*JetFlash.*",
-                                "product_id": ".*Transcend 16GB.*",
-                                "serial_num": ".*2822188912.*"
+                                "vendor_id": "JetFlash",
+                                "product_id": "Transcend 16GB",
+                                "serial_num": "2822188912"
                             },
                             {
-                                "vendor_id": ".*VMware.*",
-                                "product_id": ".*VMware Virtual S.*",
-                                "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+                                "vendor_id": "VMware,",
+                                "product_id": "VMware Virtual S",
+                                "serial_num": "c2962b122a6c3779e38cab08e146"
                             }   
                         ],
                         "non_udx": [
@@ -346,9 +346,9 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
 1. Remove the following from the `pilot-link-ctrlr-config-detect1.json` section `dev_to_type_map` As the device is not listed it will be assigned by the `non_udx` catch all configuration section:
    ```bash
    {   
-        "vendor_id": ".*VMware.*",
-        "product_id": ".*VMware Virtual S.*",
-        "serial_num": ".*c2962b122a6c3779e38cab08e146.*"
+        "vendor_id": "VMware,",
+        "product_id": "VMware Virtual S",
+        "serial_num": "c2962b122a6c3779e38cab08e146"
    } 
    ```
 2. The configuration file should now be as follows for the `StorageCtrlrService` section:
@@ -378,9 +378,9 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
                     "dev_to_type_map": {
                         "udx": [
                             {
-                                "vendor_id": ".*JetFlash.*",
-                                "product_id": ".*Transcend 16GB.*",
-                                "serial_num": ".*2822188912.*"
+                                "vendor_id": "JetFlash",
+                                "product_id": "Transcend 16GB",
+                                "serial_num": "2822188912"
                             }
                         ],
                         "non_udx": [
