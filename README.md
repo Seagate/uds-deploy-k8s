@@ -84,7 +84,7 @@ Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilo
 ```mermaid
 flowchart LR
 A[Hard] -->|Text| B(Round)
-click A ".#destroying-a-uds-pilot-link-deployment" "Tooltip..."
+click A ".(#destroying-a-uds-pilot-link-deployment)" "Tooltip..."
 B --> C{Decision}
 C -->|One| D[Result 1]
 C -->|Two| E[Result 2]
