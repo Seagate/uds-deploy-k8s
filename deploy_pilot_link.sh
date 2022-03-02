@@ -88,6 +88,11 @@ printf "Enter your Lyve Pilot account password : "
 read -s LP_PASSWORD
 printf "\n"
 
+if [ "$LP_PASSWORD" == "" ]
+then
+    LP_PASSWORD="notset"
+fi
+
 if [ "$CFG_FILE" == "" ] || [ ! -e $CFG_FILE ]
 then
     printf "ERROR: Configuration file does not exist\n"
