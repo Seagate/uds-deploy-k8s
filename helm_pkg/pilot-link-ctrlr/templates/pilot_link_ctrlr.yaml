@@ -114,6 +114,27 @@ spec:
           imagePullPolicy: Always
           securityContext:
             privileged: true
+          startupProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/ready
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/ready
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/alive
+            initialDelaySeconds: 5
+            periodSeconds: 5
       {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
       nodeSelector:
         pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
