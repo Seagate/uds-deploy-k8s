@@ -121,42 +121,35 @@ We need to find the storage we want to use on `node-1`
    ```bash
    ssh root@node-1
    ```
-2. List the devices by id:
+2. List the vendor, product and serialization information:
    ```bash
-   ls -l /dev/disk/by-id
+   lsblk -o name,vendor,model,serial
    ```
    ```bash
-   total 0
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 ata-VMware_Virtual_IDE_CDROM_Drive_10000000000000000001 -> ../../sr0
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 dm-name-centos-root -> ../../dm-0
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 dm-name-centos-swap -> ../../dm-1
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 dm-uuid-LVM-wVNfyM5epNvRmEdVQs2Ic6oRB2nNbyoASGGi92CMdympZbeL6qCR5O6YiPgOIIpJ -> ../../dm-0
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 dm-uuid-LVM-wVNfyM5epNvRmEdVQs2Ic6oRB2nNbyoAtlhJ48seylccHlOrb9VWOkDT5AG4hS0K -> ../../dm-1
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 lvm-pv-uuid-lNXqrM-l3IV-tZO5-54u5-u6zQ-q0s3-FYqHQS -> ../../sda2
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c29004bdd2fa35cf9768804944f0 -> ../../sda
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 scsi-36000c29004bdd2fa35cf9768804944f0-part1 -> ../../sda1
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 scsi-36000c29004bdd2fa35cf9768804944f0-part2 -> ../../sda2
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c291ae09f373e8c6809af3c8daad -> ../../sdf
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c2925d37e0bfe431d2b35716f8ab -> ../../sdc
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c294e0b5284a99a3313719c6a4e3 -> ../../sde
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c2962b122a6c3779e38cab08e146 -> ../../sdb
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 scsi-36000c29a266f553d6d67703bef1036ed -> ../../sdd
-   lrwxrwxrwx 1 root root   9 Feb 22 11:04 usb-JetFlash_Transcend_16GB_2822188912-0:0 -> ../../sdh
-   lrwxrwxrwx 1 root root   9 Feb 22 11:04 usb-JetFlash_Transcend_4GB_I7NMP3IG-0:0 -> ../../sdg
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c29004bdd2fa35cf9768804944f0 -> ../../sda
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 wwn-0x6000c29004bdd2fa35cf9768804944f0-part1 -> ../../sda1
-   lrwxrwxrwx 1 root root  10 Jan 26 12:29 wwn-0x6000c29004bdd2fa35cf9768804944f0-part2 -> ../../sda2
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c291ae09f373e8c6809af3c8daad -> ../../sdf
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c2925d37e0bfe431d2b35716f8ab -> ../../sdc
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c294e0b5284a99a3313719c6a4e3 -> ../../sde
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c2962b122a6c3779e38cab08e146 -> ../../sdb
-   lrwxrwxrwx 1 root root   9 Jan 26 12:29 wwn-0x6000c29a266f553d6d67703bef1036ed -> ../../sdd
+   NAME            VENDOR   MODEL            SERIAL
+    sda             VMware,  VMware Virtual S 6000c29004bdd2fa35cf9768804944f0
+    ├─sda1
+    └─sda2
+      ├─centos-root
+      └─centos-swap
+    sdb             VMware,  VMware Virtual S 6000c2962b122a6c3779e38cab08e146
+    sdc             VMware,  VMware Virtual S 6000c2925d37e0bfe431d2b35716f8ab
+    sdd             VMware,  VMware Virtual S 6000c29a266f553d6d67703bef1036ed
+    sde             VMware,  VMware Virtual S 6000c294e0b5284a99a3313719c6a4e3
+    sdf             VMware,  VMware Virtual S 6000c291ae09f373e8c6809af3c8daad
+    sdg             JetFlash Transcend 4GB    I7NMP3IG
+    sdh             JetFlash Transcend 16GB   2822188912
    ```
    **Note:** the following devices:
    * `../../sdb` is the ***VM Ware Virtual Disk*** we want to use as ***UDX*** storage
    * `../../sdh` is the ***JetFlash Transcend 16GB*** USB device we want to use as ***UDX*** storage
    * `../../sdg` is an additional USB device we will use as ***NON-UDX*** storage
  
+   **Note:** the mapping to the the configuration file is:
+   * `vendor_id` is `VENDOR`
+   * `product_id` is `MODEL`
+   * `serial_num` is `SERIAL`
+  
  ` `
 
 3. List the devices by path:
@@ -220,7 +213,6 @@ We need to find the storage we want to use on `node-1`
 
    We add the `vendor_id`, `product_id` and `serial_num` information for the ***VM Ware Virtual Disk*** and ***JetFlash Transcend 16GB*** USB device to the `udx` section and configure `non_udx` for all other devices.
 
-   **Note:** The `vendor_id`, `product_id` and `serial_num` information are derived from the **List the devices by id** section.
    ```bash
    {
         "version": "2.0",
@@ -247,7 +239,7 @@ We need to find the storage we want to use on `node-1`
                             {
                                 "vendor_id": "VMware,",
                                 "product_id": "VMware Virtual S",
-                                "serial_num": "c2962b122a6c3779e38cab08e146"
+                                "serial_num": "6000c2962b122a6c3779e38cab08e146"
                             }   
                         ],
                         "non_udx": [
@@ -393,7 +385,7 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
    {   
         "vendor_id": "VMware,",
         "product_id": "VMware Virtual S",
-        "serial_num": "c2962b122a6c3779e38cab08e146"
+        "serial_num": "6000c2962b122a6c3779e38cab08e146"
    } 
    ```
 2. The configuration file should now be as follows for the `StorageCtrlrService` section:
