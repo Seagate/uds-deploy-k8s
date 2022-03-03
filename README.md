@@ -81,16 +81,6 @@ Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilo
 ## Deploying Pilot Link on Kubernetes
 **UDS Pilot Link** can be deployed on a single or multi node Kubernetes cluster.
 
-```mermaid
-flowchart LR
-A[Hard] -->|Text| B(Round)
-click A "./#destroying-a-uds-pilot-link-deployment"
-B --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-
 ### Labelling a Node for Storage Detection
 If you want to use the **UDS Pilot Link** deployment to detect storage, you will need to label the node so the deployment can be assigned to the designated node
 
