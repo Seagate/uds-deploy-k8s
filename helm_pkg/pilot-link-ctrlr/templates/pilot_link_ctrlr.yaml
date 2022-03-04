@@ -120,7 +120,8 @@ spec:
               - cat
               - /tmp/ready
             initialDelaySeconds: 10
-            periodSeconds: 10
+            periodSeconds: 5
+            failureThreshold: 5
           readinessProbe:
             exec:
               command:
@@ -135,6 +136,13 @@ spec:
               - /tmp/alive
             initialDelaySeconds: 5
             periodSeconds: 5
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 100m
+            limits:
+              memory: 500Mi
+              cpu: 400m
       {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
       nodeSelector:
         pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
