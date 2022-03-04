@@ -3,6 +3,21 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.pilotlinkctrlr.networkpolicy.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  ingress:
+  - {}
+  egress:
+  - {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:

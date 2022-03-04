@@ -1,5 +1,7 @@
 namespace: default
 pilotlinkctrlr:
+    networkpolicy:
+        name: pilot-link-ctrlr-network-policy
     serviceaccount:
         name: pilot-link-ctrlr-service-account
     clusterrolebinding:
