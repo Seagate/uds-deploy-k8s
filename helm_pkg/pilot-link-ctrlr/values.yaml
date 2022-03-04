@@ -4,6 +4,8 @@ pilotlinkctrlr:
         name: pilot-link-ctrlr-network-policy
     serviceaccount:
         name: pilot-link-ctrlr-service-account
+    clusterrole:
+        name: pilot-link-ctrlr-rbac-role
     clusterrolebinding:
         name: pilot-link-ctrlr-rbac-binding
     name: pilot-link-ctrlr

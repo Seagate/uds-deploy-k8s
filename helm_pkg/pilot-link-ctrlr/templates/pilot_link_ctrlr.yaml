@@ -25,10 +25,18 @@ metadata:
   namespace: {{ .Values.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrolebinding.name }}
-  namespace: {{ .Values.namespace }}
 subjects:
   - kind: ServiceAccount
     # Reference to upper's `metadata.name`
@@ -37,7 +45,7 @@ subjects:
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: cluster-admin
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
