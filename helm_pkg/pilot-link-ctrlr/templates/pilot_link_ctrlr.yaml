@@ -3,6 +3,21 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.pilotlinkctrlr.networkpolicy.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  ingress:
+  - {}
+  egress:
+  - {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -10,10 +25,27 @@ metadata:
   namespace: {{ .Values.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
+rules:
+- apiGroups: [""]
+  resources: ["services", "secrets", "persistentvolumes", "persistentvolumeclaims"]
+  verbs: ["create", "get", "list", "patch", "update", "watch"]
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: [""]
+  resources: ["events", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["create", "get", "list", "patch", "update", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrolebinding.name }}
-  namespace: {{ .Values.namespace }}
 subjects:
   - kind: ServiceAccount
     # Reference to upper's `metadata.name`
@@ -22,7 +54,7 @@ subjects:
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: cluster-admin
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
@@ -66,9 +98,9 @@ spec:
         - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
-        - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
         - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
@@ -104,7 +136,7 @@ spec:
             - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
               mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
               mountPropagation: Bidirectional
-            - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
               mountPath: /hostdev
               mountPropagation: HostToContainer
             - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
@@ -114,6 +146,35 @@ spec:
           imagePullPolicy: Always
           securityContext:
             privileged: true
+          startupProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/ready
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/ready
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/alive
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 100m
+            limits:
+              memory: 500Mi
+              cpu: 400m
       {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
       nodeSelector:
         pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
