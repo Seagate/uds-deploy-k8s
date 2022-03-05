@@ -25,16 +25,16 @@ pilotlinkctrlr:
             name: pilot-link-ctrlr-detection
             storage: 1Gi
             hostpath: /mnt/pilot-link/storage
-        hostdevices:
-            name: pilot-link-ctrlr-hostdevices
+        hostdev:
+            name: pilot-link-ctrlr-hostdev
         hostsys:
             name: pilot-link-ctrlr-hostsys
     pvc:
         detection:
             name: pilot-link-ctrlr-detection
             storage: 1Gi
-        hostdevices:
-            name: pilot-link-ctrlr-hostdevices
+        hostdev:
+            name: pilot-link-ctrlr-hostdev
         hostsys:
             name: pilot-link-ctrlr-hostsys
     dataservices:

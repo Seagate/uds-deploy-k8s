@@ -98,9 +98,9 @@ spec:
         - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
-        - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
         - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
@@ -136,7 +136,7 @@ spec:
             - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
               mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
               mountPropagation: Bidirectional
-            - name: {{ .Values.pilotlinkctrlr.pvc.hostdevices.name }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
               mountPath: /hostdev
               mountPropagation: HostToContainer
             - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}

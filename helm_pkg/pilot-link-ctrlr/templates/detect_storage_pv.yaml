@@ -19,7 +19,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdevices.name }}
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdev.name }}
   labels:
     type: local
 spec:
