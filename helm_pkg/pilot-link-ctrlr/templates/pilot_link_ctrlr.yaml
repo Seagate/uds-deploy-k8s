@@ -91,6 +91,12 @@ spec:
         app: {{ .Values.pilotlinkctrlr.name }}
     spec:
       volumes:
+        - name: tmp-fs
+          emptyDir:
+            medium: Memory
+        - name: mnt-fs
+          emptyDir:
+            medium: Memory
         - name: {{ .Values.pilotlinkctrlr.config.name }}
           configMap: 
             name: {{ .Values.pilotlinkctrlr.config.name }}
@@ -130,6 +136,10 @@ spec:
                 key: lppassword
           resources: {}
           volumeMounts:
+            - name: tmp-fs
+              mountPath: /tmp
+            - name: mnt-fs
+              mountPath: /mnt
             - name: {{ .Values.pilotlinkctrlr.config.name }}
               mountPath: /etc/udsctrlr
             {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
@@ -146,6 +156,7 @@ spec:
           imagePullPolicy: Always
           securityContext:
             privileged: true
+            readOnlyRootFilesystem : true
           startupProbe:
             exec:
               command:
