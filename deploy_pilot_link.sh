@@ -34,7 +34,7 @@ do
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: The namespace for the deployment. The namespace will be created. This MUST be provided\n"
-            printf "      -d, --detect: Enables storage detection on the kubernetes node. If not provide the storage detecion feature is disabled \n"
+            printf "      -d, --detect: Enables storage detection on the kubernetes node. If not provide the storage detection feature is disabled \n"
             printf "      -f, --file: The configuration file to use for the deployment. Defaults to cfg/pilot-link-ctrlr-config.json\n"
             printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -d|--detect to attach the deployment to the intended node\n"
             printf "for storage detection. Assumes pilotLinkNodeLabel is set as the same as the namespace if not provided\n"
