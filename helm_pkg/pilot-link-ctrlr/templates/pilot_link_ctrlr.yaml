@@ -30,17 +30,14 @@ metadata:
   name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
 rules:
 - apiGroups: [""]
-  resources: ["services", "secrets", "persistentvolumes", "persistentvolumeclaims"]
-  verbs: ["create", "get", "list", "patch", "update", "watch"]
-- apiGroups: [""]
-  resources: ["persistentvolumes"]
+  resources: ["services", "secrets", "persistentvolumes", "persistentvolumeclaims", "configmaps"]
   verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
 - apiGroups: [""]
   resources: ["events", "pods"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["create", "get", "list", "patch", "update", "watch"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -61,6 +58,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.pilotlinkctrlr.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  pilot-link-ctrlr-config.json:
+    {{ toJson .Values.pilotlinkctrlr.config.file }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-bkup" .Values.pilotlinkctrlr.config.name }}
   namespace: {{ .Values.namespace }}
 data:
   pilot-link-ctrlr-config.json:
@@ -91,6 +97,12 @@ spec:
         app: {{ .Values.pilotlinkctrlr.name }}
     spec:
       volumes:
+        - name: tmp-fs
+          emptyDir:
+            medium: Memory
+        - name: mnt-fs
+          emptyDir:
+            medium: Memory
         - name: {{ .Values.pilotlinkctrlr.config.name }}
           configMap: 
             name: {{ .Values.pilotlinkctrlr.config.name }}
@@ -130,6 +142,10 @@ spec:
                 key: lppassword
           resources: {}
           volumeMounts:
+            - name: tmp-fs
+              mountPath: /tmp
+            - name: mnt-fs
+              mountPath: /mnt
             - name: {{ .Values.pilotlinkctrlr.config.name }}
               mountPath: /etc/udsctrlr
             {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
@@ -146,6 +162,7 @@ spec:
           imagePullPolicy: Always
           securityContext:
             privileged: true
+            readOnlyRootFilesystem : true
           startupProbe:
             exec:
               command:

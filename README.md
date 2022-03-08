@@ -342,7 +342,7 @@ export PILOT_LINK_DS_IMAGE=<myregistry>/udspilotlinkds:x.x.x
 ### Deploying UDS Pilot Link
 The `deploy_pilot_link.sh` script is used to deploy **UDS Pilot Link**. In this example we will deploy a **UDS Pilot Link Controller** and 2 **UDS Pilot Link Data Services** onto `node-1` on the Kubernetes cluster.
 
-We set the namespace to the same as the label `detect1` that we put on `node-1` using the `-n` option. We enable storage detection with the `-d` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
+We set the namespace to the same as the label `detect1` that we put on `node-1` using the `-n` option. We enable storage detection with the `-s` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
 
 **Note:** The script will ask for a password for the auto registration feature. The feature is not enabled for Lyve Pilot yet. We `echo notset` for the password to avoid the interactive prompt.
 
@@ -350,7 +350,7 @@ We set the namespace to the same as the label `detect1` that we put on `node-1` 
 
 Run the following command to deploy:
 ```bash
-echo notset | uds-deploy-k8s/deploy_pilot_link.sh -n detect1 -d -f pilot-link-ctrlr-detect1-config.json
+echo notset | uds-deploy-k8s/deploy_pilot_link.sh -n detect1 -s -f pilot-link-ctrlr-detect1-config.json
 ```
 ```bash
 Enter your Lyve Pilot account password :

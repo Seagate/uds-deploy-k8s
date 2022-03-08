@@ -26,17 +26,17 @@ do
             printf "  deploy_pilot_link.sh -n nostore1 -f pilot-link-config.json\n"
             printf "\n"
             printf "  # Deploy a Pilot Link deployment with storage detection enabled\n"
-            printf "  deploy_pilot_link.sh -n detect1 -f pilot-link-config.json -d\n"
+            printf "  deploy_pilot_link.sh -n detect1 -f pilot-link-config.json -s\n"
             printf "\n"
             printf "  # Deploy a Pilot Link deployment with storage detection enabled to a specific kubernetes node, where the label is not the same\n"
             printf "  as the namespace that is used\n"
-            printf "  deploy_pilot_link.sh -n detect1 -f pilot-link-config.json -d -l pilotlinknodelabel\n"
+            printf "  deploy_pilot_link.sh -n detect1 -f pilot-link-config.json -s -l pilotlinknodelabel\n"
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: The namespace for the deployment. The namespace will be created. This MUST be provided\n"
-            printf "      -d, --detect: Enables storage detection on the kubernetes node. If not provide the storage detecion feature is disabled \n"
+            printf "      -s, --storedetect: Enables storage detection on the kubernetes node. If not provide the storage detection feature is disabled \n"
             printf "      -f, --file: The configuration file to use for the deployment. Defaults to cfg/pilot-link-ctrlr-config.json\n"
-            printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -d|--detect to attach the deployment to the intended node\n"
+            printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -s,--storedetect to attach the deployment to the intended node\n"
             printf "for storage detection. Assumes pilotLinkNodeLabel is set as the same as the namespace if not provided\n"
             printf "\n"
             printf "Usage:\n"
@@ -49,7 +49,7 @@ do
             shift
             shift
             ;;
-        -d|--detect)
+        -s|--storedetect)
             TYPE="detect"
             shift
             ;;
