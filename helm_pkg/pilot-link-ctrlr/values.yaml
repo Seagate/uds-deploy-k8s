@@ -40,7 +40,5 @@ pilotlinkctrlr:
     dataservices:
         type: 'detect'
         image: ghcr.io/seagate/udspilotlinkds:0.1.0
-        dmx: 
+        dmx:
             name: pilot-link-dmx-cfg
-            enabled: 'no'
-

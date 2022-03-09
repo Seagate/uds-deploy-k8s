@@ -7,7 +7,7 @@ CFG_FILE="$BASE_PATH/cfg/pilot-link-ctrlr-config.json"
 NODE_LABEL=""
 LP_PASSWORD=""
 DMX_FILE=""
-DMX_ENABLED="no"
+DMX_ENABLED="false"
 
 while [[ $# -gt 0 ]]
 do
@@ -71,7 +71,7 @@ do
             ;;
         -d|--dmx)
             DMX_FILE=$2
-            DMX_ENABLED="yes"
+            DMX_ENABLED="true"
             shift
             shift
             ;;
@@ -113,7 +113,7 @@ then
     exit 1
 fi
 
-if [ "$DMX_ENABLED" == "yes" ]
+if [ "$DMX_ENABLED" == "true" ]
 then
     if [ "$DMX_FILE" == "" ] || [ ! -e $DMX_FILE ]
     then
@@ -148,7 +148,6 @@ then
         --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
         --set pilotlinkctrlr.nodeselector.pilotlinknodelabel=$pilotlinknodelabel \
         --set pilotlinkctrlr.dataservices.type=$TYPE \
-        --set pilotlinkctrlr.dataservices.dmx.enabled=$DMX_ENABLED \
         --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
         --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
         --set-file pilotlinkctrlr.config.file=$CFG_FILE
@@ -158,24 +157,25 @@ else
         --set namespace=$namespace \
         --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
         --set pilotlinkctrlr.dataservices.type=$TYPE \
-        --set pilotlinkctrlr.dataservices.dmx.enabled=$DMX_ENABLED \
         --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
         --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
         --set-file pilotlinkctrlr.config.file=$CFG_FILE
 fi
 
-if [ "$DMX_ENABLED" == "yes" ]
-then
-    while true
-    do
-        RESULT=$(kubectl get namespaces | grep -w $namespace)
-        if [[ "$RESULT" != "" ]]
-        then
-            break
-        fi
-        sleep 1
-    done
+while true
+do
+    RESULT=$(kubectl get namespaces | grep -w $namespace)
+    if [[ "$RESULT" != "" ]]
+    then
+        break
+    fi
+    sleep 1
+done
 
-    printf "Creating $namespace-$name_dmx\n"
+printf "Creating $namespace-$name_dmx\n"
+if [ "$DMX_ENABLED" == "true" ]
+then
     kubectl create configmap -n $namespace $name_dmx --from-file $DMX_FILE
+else
+    kubectl create configmap -n $namespace $name_dmx
 fi

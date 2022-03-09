@@ -106,11 +106,9 @@ spec:
         - name: {{ .Values.pilotlinkctrlr.config.name }}
           configMap: 
             name: {{ .Values.pilotlinkctrlr.config.name }}
-        {{- if eq .Values.pilotlinkctrlr.dataservices.dmx.enabled "yes" }}
         - name: {{ .Values.pilotlinkctrlr.dataservices.dmx.name }}
           configMap: 
             name: {{ .Values.pilotlinkctrlr.dataservices.dmx.name }}
-        {{- end }}
         {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
         - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
           persistentVolumeClaim:
@@ -153,10 +151,8 @@ spec:
               mountPath: /mnt
             - name: {{ .Values.pilotlinkctrlr.config.name }}
               mountPath: /etc/udsctrlr
-            {{- if eq .Values.pilotlinkctrlr.dataservices.dmx.enabled "yes" }}
             - name: {{ .Values.pilotlinkctrlr.dataservices.dmx.name }}
               mountPath: /etc/dmx
-            {{- end }}
             {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
             - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
               mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
