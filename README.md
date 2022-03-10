@@ -434,7 +434,7 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
 
     Run the following command:
     ```bash
-    uds-deploy-k8s/modify_pilot_link.sh -n detect1 -f pilot-link-ctrlr-detect1-config.json
+    uds-deploy-k8s/modify_pilot_link_cfg.sh -n detect1 -f pilot-link-ctrlr-detect1-config.json
     ```
     ```bash
     Modifying the configuration for detect1/pilot-link-ctrlrconfigmap/pilot-link-ctrlr-cfg replaced

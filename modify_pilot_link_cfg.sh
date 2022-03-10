@@ -12,14 +12,14 @@ do
             printf "Examples:\n"
             printf "\n"
             printf "  # Modify the configuration for a Pilot Link controller in specified namespace\n"
-            printf "  modify_pilot_link.sh -n namespace -f config-file.json\n"
+            printf "  modify_pilot_link_cfg.sh -n namespace -f config-file.json\n"
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: The namespace of the deployment. This MUST be provided\n"
             printf "      -f, --file: The configuration file to use to modify the deployment. This MUST be provided\n"
             printf "\n"
             printf "Usage:\n"
-            printf "  modify_pilot_link.sh -n namespace -f config-file.json\n"
+            printf "  modify_pilot_link_cfg.sh -n namespace -f config-file.json\n"
             printf "\n"
             exit 1
             ;;
@@ -52,6 +52,7 @@ name="pilot-link-ctrlr"
 if [[ $namespace == "" ]]
 then
     printf "ERROR: A namespace must be specified\n"
+    exit 1
 fi
 
 if [ "$CFG_FILE" == "" ] || [ ! -e $CFG_FILE ]

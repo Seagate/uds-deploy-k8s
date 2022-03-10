@@ -42,7 +42,7 @@ do
             printf "      -s, --storedetect: Enables storage detection on the kubernetes node. If not provide the storage detection feature is disabled\n"
             printf "      -f, --file: The configuration file to use for the deployment. Defaults to cfg/pilot-link-ctrlr-config.json\n"
             printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -s,--storedetect to attach the deployment to the intended node\n"
-            printf "      -d, --dmx: Enables the DMX feature. If not provide the DMX feature is disabled. A tar.gz file with the DMX scripts and config file MUST be provided\n"
+            printf "      -d, --dmx: Enables the DMX feature. If not provided the DMX feature is disabled. A tar.gz file with the DMX scripts and config file MUST be provided\n"
             printf "for storage detection. Assumes pilotLinkNodeLabel is set as the same as the namespace if not provided\n"
             printf "\n"
             printf "Usage:\n"
