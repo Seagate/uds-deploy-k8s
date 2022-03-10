@@ -27,7 +27,11 @@ The **UDS Pilot Link** platform consists of the following components:
     - [Defining a Storage Provisioner in the UDS Pilot Link Configuration File](#defining-a-storage-provisioner-in-the-uds-pilot-link-configuration-file)
     - [Setting the Container Registry and Container Version](#setting-the-container-registry-and-container-version)
     - [Deploying UDS Pilot Link](#deploying-uds-pilot-link)
+  - [Deploying Pilot Link on Kubernetes with DMX (Data Mover eXtensions)](#deploying-pilot-link-on-kubernetes-with-dmx-data-mover-extensions)
+    - [Creating a DMX Package](#creating-a-dmx-package)
+    - [Deploying UDS Pilot Link with DMX](#deploying-uds-pilot-link-with-dmx)
   - [Modify a UDS Pilot Link Controller Configuration File on a Running Deployment](#modify-a-uds-pilot-link-controller-configuration-file-on-a-running-deployment)
+  - [Modify a UDS Pilot Link DMX Configuration on a Running Deployment](#modify-a-uds-pilot-link-dmx-configuration-on-a-running-deployment)
   - [Updating the UDS Pilot Link Container Images in a Running Deployment](#updating-the-uds-pilot-link-container-images-in-a-running-deployment)
   - [Collecting Logs from a UDS Pilot Link Deployment](#collecting-logs-from-a-uds-pilot-link-deployment)
   - [Destroying a UDS Pilot Link Deployment](#destroying-a-uds-pilot-link-deployment)
@@ -108,7 +112,7 @@ If you want to use the **UDS Pilot Link** deployment to detect storage, you will
    node-1   Ready    <none>   186d   v1.23.3   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node-1,kubernetes.io/os=linux,pilotLinkNodeLabel=detect1,topology.jiva.openebs.io/nodeName=node-1
    ```
 ### Defining Storage Detection in the UDS Pilot Link Controller Configuration File
-If you wan to use the **UDS Pilot Link** deployment to detect storage, you will need to create **UDS Pilot Link Controller** configuration file based off of [`pilot-link-ctrlr-config.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/pilot-link-ctrlr-config.json) and modify the `StorageCtrlrService` -> `storage_config` section. An example can be found at [`pilot-link-ctrlr-config-example.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/examples/pilot-link-ctrlr-config-example.json).
+If you want to use the **UDS Pilot Link** deployment to detect storage, you will need to create **UDS Pilot Link Controller** configuration file based off of [`pilot-link-ctrlr-config.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/pilot-link-ctrlr-config.json) and modify the `StorageCtrlrService` -> `storage_config` section. An example can be found at [`pilot-link-ctrlr-config-example.json`](https://github.com/Seagate/uds-deploy-k8s/blob/UDX-7586_Pilot_Link_Pre_Release_Merge/cfg/examples/pilot-link-ctrlr-config-example.json).
 
 In this example we will configure a `pilot-link-ctrlr-config-detect1.json` configuration file for `node-1` label `pilotLinkNodeLabel=detect1` that assigns the following storage:
 *  A ***VM Ware Virtial Disk*** as ***UDX*** storage 
@@ -361,6 +365,114 @@ NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
+Creating detect1-pilot-link-dmx-cfg
+configmap/pilot-link-dmx-cfg created
+```
+
+Check that the deployment is ready by making sure all pods are up and running with the command:
+```bash
+ kubectl get pods -n detect1
+```
+You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `READY` is `1/1` and `STATUS` is `Running`
+```bash
+NAME                                             READY   STATUS    RESTARTS   AGE
+pilot-link-ctrlr-6b7745f8dd-7dh7c                1/1     Running   0          8m36s
+pilot-link-ds1-686c747b6-2cs69                   1/1     Running   0          8m2s
+pilot-link-ds2-74748f9f45-nx827                  1/1     Running   0          8m2s
+```
+
+## Deploying Pilot Link on Kubernetes with DMX (Data Mover eXtensions)
+This section defines how to deploy **UDS Pilot Link** with **DMX**. It is defined here in a separate section but can combined with the features discussed in [Deploying Pilot Link on Kubernetes](#deploying-pilot-link-on-kubernetes).
+
+**DMX** allows the user to add script to be run in the **UDS Pilot Link Data Services** Data Mover Pipeline. The scripts can perform the following on the Data Mover operations:
+
+* Validate a file and return PASSED, FAILED or IGNORE
+* Add customerInfo tags to the manifest and metadata
+
+**Note:** The purpose of this section is not to define the internal details of the scripts, but to define how to package and deploy the scripts with **UDS Pilot Link**.
+
+### Creating a DMX Package
+The DMX package is `tar.gz` files containing a configuration file and scripts.
+
+**Note:** The configuration file must be called `pilot-link-ds-config.json` the script can be named differently as they are defined in the configuration file.
+
+The `pilot-link-ds-config.json` configuration file in this example is defined as:
+```bash
+{
+    "version": "2.0",
+    "service_config": {
+        "DataMover": {
+            "extensions": {
+                "staging": {
+                    "when": "pre",
+                    "cmd": "dmx_staging.py"
+                },
+                "object_processing": {
+                    "when": "pre",
+                    "cmd": "dmx_object_processing.py"
+                },
+                "verify": {
+                    "when": "pre",
+                    "cmd": "dmx_script_verify.py"
+                }
+            },
+            "num_workers": 2,
+            "num_sub_workers": 4,
+            "hash_name": "blake2b",
+            "blksize": -1,
+            "period": 5
+        }
+    }
+}
+```
+The `when` parameter defines if the script is run before or after the UDS Data Moevr operation. Scripts can be defined for the `staging`, `object_processing` and `verify` operations. If a script is not defined the standard UDS Data Mover operation will be run with no DMX extension.
+
+To create the DMX package we start with all of the files in a directory `my_dmx_package`:
+
+```bash
+my_dmx_package
+|_ pilot-link-ds-config.json
+|_ dmx_staging.py
+|_ dmx_object_proccessing.py
+|_ dmx_verify.py
+```
+Run tar to create the DMX package
+```bash
+tar -czvf dmx.tar.gz -C my_dmx_package .
+```
+The result is tar.gz file called `dmx.tar.gz` with the following structure:
+```bash
+dmx.tar.gz
+|_ pilot-link-ds-config.json
+|_ dmx_staging.py
+|_ dmx_object_proccessing.py
+|_ dmx_verify.py
+```
+### Deploying UDS Pilot Link with DMX
+
+The `deploy_pilot_link.sh` script is used to deploy **UDS Pilot Link**. In this example we will deploy a **UDS Pilot Link Controller** and 2 **UDS Pilot Link Data Services** on the Kubernetes cluster.
+
+We set the namespace to `dmx1` using the `-n` option. We provide the configuration file `pilot-link-ctrlr-config.json` with the `-f` option. We provided the DMX `dmx.tar.gz` file with the `-d` option.
+
+**Note:** The script will ask for a password for the auto registration feature. The feature is not enabled for Lyve Pilot yet. We `echo notset` for the password to avoid the interactive prompt.
+
+**Note:** Information on the all functions and usage is available by providing the `-h` option
+
+Run the following command to deploy:
+```bash
+echo notset | uds-deploy-k8s/deploy_pilot_link.sh -n dmx1 -f pilot-link-ctrlr-config.json -d dmx.tag.gz
+```
+```bash
+Enter your Lyve Pilot account password :
+Creating detect1-pilot-link-ctrlr
+NAME: detect1-pilot-link-ctrlr
+LAST DEPLOYED: Tue Feb 22 13:22:18 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+Creating detect1-pilot-link-dmx-cfg
+configmap/pilot-link-dmx-cfg created
 ```
 
 Check that the deployment is ready by making sure all pods are up and running with the command:
@@ -453,10 +565,41 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
     pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
     pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
     ```
-    **Note:** You may see a additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
+    **Note:** You may see an additional `pilot-link-ctrlr` in the `Terminating` state as the configuration is modified.
+
+## Modify a UDS Pilot Link DMX Configuration on a Running Deployment
+The `modify_pilot_link_dmx.sh` script is used to modify the **DMX** package previously deployed **UDS Pilot Link**. In this example we will modify the `dmx1` deployment that we deployed in the [Deploying Pilot Link on Kubernetes with DMX (Data Mover eXtensions)](#deploying-pilot-link-on-kubernetes-with-dmx-data-mover-extensions) section.
+
+We create new **DMX** package `dmx1.tar,gz` with steps defined in the [Creating a DMX Package](#creating-a-dmx-package) section.
+
+We set the namespace to `dmx1` with the `-n` option. We set the **DMX** package with to `dmx1.tar.gz` using the `-d` option.
+
+**Note:** The **DMX** package can be removed from the deployment by omitting the `-d` option.
+
+Run the following command:
+```bash
+uds-deploy-k8s/modify_pilot_link_dmx.sh -n dmx1 -d dmx1.tar.gz
+```
+```bash
+Applying DMX modification to dmx1/pilot-link-dmx-cfgconfigmap/pilot-link-dmx-cfg replaced
+DMX modification complete for dmx1/pilot-link-dmx-cfg
+```
+
+Check that the deployment is ready by making sure all pods are up and running with the command:
+```bash
+kubectl get pods -n dmx1
+```
+You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `READY` is `1/1` and `STATUS` is `Running`
+```bash
+NAME                                             READY   STATUS    RESTARTS   AGE
+pilot-link-ctrlr-54cd6f58db-vknw4                1/1     Running   0          3m20s
+pilot-link-ds1-686c747b6-bt47c                   1/1     Running   0          14m
+pilot-link-ds2-74748f9f45-l7dxw                  1/1     Running   0          14m
+```
+**Note:** You may see additional `pilot-link-ds` pods in the `Terminating` state as the DMX configuration is modified.
 
 ## Updating the UDS Pilot Link Container Images in a Running Deployment
-The `update_pilot_link.sh` script is used to udpate a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
+The `update_pilot_link.sh` script is used to update a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
 We set the namespace to `detect1` using the `-n` option.
 
