@@ -51,7 +51,6 @@ done
 set -- "${POSITIONAL_ARGS[@]}"
 
 namespace=$NAMESPACE
-name="pilot-link-ctrlr"
 name_dmx="pilot-link-dmx-cfg"
 
 if [[ $namespace == "" ]]
@@ -69,21 +68,18 @@ then
     fi
 fi
 
-STATUS=$(kubectl get deployment -n $namespace $name 2>&1)
+STATUS=$(kubectl get configmap -n $namespace $name_dmx 2>&1)
 if [[ "$STATUS" == "Error"* ]]
 then
-    printf "ERROR: $namespace/$name not found\n"
+    printf "ERROR: $namespace/$name_dmx not found\n"
     exit 1
 fi
 
-printf "Modifying the configuration for $namespace/$name"
+printf "Applying DMX modification to $namespace/$name_dmx"
 if [ "$DMX_ENABLED" == "true" ]
 then
     kubectl create configmap -n $namespace $name_dmx --from-file $DMX_FILE -o yaml --dry-run=client | kubectl replace -f -
 else
     kubectl create configmap -n $namespace $name_dmx -o yaml --dry-run=client | kubectl replace -f -
 fi
-
-printf "Applying configuration to $namespace/$name\n"
-kubectl rollout restart -n $namespace deployment/$name
-printf "Configuration modification complete for $namespace/$name\n"
+printf "DMX modification complete for $namespace/$name_dmx\n"
