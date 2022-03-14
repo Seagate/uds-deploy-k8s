@@ -62,14 +62,14 @@ do
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
         printf "START of get for $DEPOLYMENT_ELEM\n"
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-        kubectl get serviceaccounts,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM -o wide
+        kubectl get serviceaccounts,networkpolicy,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM -o wide
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
         printf "END of get for $DEPOLYMENT_ELEM\n"
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
         printf "START of describe for $DEPOLYMENT_ELEM\n"
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-        kubectl describe serviceaccounts,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM
+        kubectl describe serviceaccounts,networkpolicy,deployments,replicasets,pods,services,configmaps,secrets,pvc,pv -n $DEPOLYMENT_ELEM
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
         printf "END of describe for $DEPOLYMENT_ELEM\n"
         printf "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"

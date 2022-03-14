@@ -6,6 +6,8 @@ TYPE="no"
 CFG_FILE="$BASE_PATH/cfg/pilot-link-ctrlr-config.json"
 NODE_LABEL=""
 LP_PASSWORD=""
+DMX_FILE=""
+DMX_ENABLED="false"
 
 while [[ $# -gt 0 ]]
 do
@@ -32,11 +34,15 @@ do
             printf "  as the namespace that is used\n"
             printf "  deploy_pilot_link.sh -n detect1 -f pilot-link-config.json -s -l pilotlinknodelabel\n"
             printf "\n"
+            printf "  # Deploy a Pilot Link deployment with DMX enabled. The user MUST provide a directory with the files for the DMX configuration\n"
+            printf "  deploy_pilot_link.sh -n dmx1 -d dmx.tar.gz\n"
+            printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: The namespace for the deployment. The namespace will be created. This MUST be provided\n"
-            printf "      -s, --storedetect: Enables storage detection on the kubernetes node. If not provide the storage detection feature is disabled \n"
+            printf "      -s, --storedetect: Enables storage detection on the kubernetes node. If not provide the storage detection feature is disabled\n"
             printf "      -f, --file: The configuration file to use for the deployment. Defaults to cfg/pilot-link-ctrlr-config.json\n"
             printf "      -l, --label: The pilotLinkNodeLabel applied to a kubernetes node. This is used by -s,--storedetect to attach the deployment to the intended node\n"
+            printf "      -d, --dmx: Enables the DMX feature. If not provided the DMX feature is disabled. A tar.gz file with the DMX scripts and config file MUST be provided\n"
             printf "for storage detection. Assumes pilotLinkNodeLabel is set as the same as the namespace if not provided\n"
             printf "\n"
             printf "Usage:\n"
@@ -63,6 +69,12 @@ do
             shift
             shift
             ;;
+        -d|--dmx)
+            DMX_FILE=$2
+            DMX_ENABLED="true"
+            shift
+            shift
+            ;;
         -*|--*)
             printf "ERROR: Unknown option $1\n"
             exit 1
@@ -78,10 +90,12 @@ set -- "${POSITIONAL_ARGS[@]}"
 
 namespace=$NAMESPACE
 name="pilot-link-ctrlr"
+name_dmx="pilot-link-dmx-cfg"
 
 if [[ $namespace == "" ]]
 then
     printf "ERROR: A namespace must be specified\n"
+    exit 1
 fi
 
 printf "Enter your Lyve Pilot account password : "
@@ -97,6 +111,15 @@ if [ "$CFG_FILE" == "" ] || [ ! -e $CFG_FILE ]
 then
     printf "ERROR: Configuration file does not exist\n"
     exit 1
+fi
+
+if [ "$DMX_ENABLED" == "true" ]
+then
+    if [ "$DMX_FILE" == "" ] || [ ! -e $DMX_FILE ]
+    then
+        printf "ERROR: DMX file does not exist\n"
+        exit 1
+    fi
 fi
 
 if [[ -z "${PILOT_LINK_CTRLR_IMAGE}" ]]
@@ -137,4 +160,22 @@ else
         --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
         --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
         --set-file pilotlinkctrlr.config.file=$CFG_FILE
+fi
+
+while true
+do
+    RESULT=$(kubectl get namespaces | grep -w $namespace)
+    if [[ "$RESULT" != "" ]]
+    then
+        break
+    fi
+    sleep 1
+done
+
+printf "Creating $namespace-$name_dmx\n"
+if [ "$DMX_ENABLED" == "true" ]
+then
+    kubectl create configmap -n $namespace $name_dmx --from-file $DMX_FILE
+else
+    kubectl create configmap -n $namespace $name_dmx
 fi
