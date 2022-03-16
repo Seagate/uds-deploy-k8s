@@ -403,17 +403,18 @@ The `pilot-link-ds-config.json` configuration file in this example is defined as
     "service_config": {
         "DataMover": {
             "extensions": {
+                "timeout": 30,
                 "staging": {
                     "when": "pre",
                     "cmd": "dmx_staging.py"
                 },
                 "object_processing": {
                     "when": "pre",
-                    "cmd": "dmx_object_processing.py"
+                    "cmd": "/etc/uds/dmx_object_processing.py",
                 },
                 "verify": {
                     "when": "pre",
-                    "cmd": "dmx_script_verify.py"
+                    "cmd": "/etc/uds/dmx_script_verify.py"
                 }
             },
             "num_workers": 2,
