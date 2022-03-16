@@ -21,6 +21,10 @@
         "DeployCtrlrService": {
             "period": 5,
             "num_data_services": 2
+        },
+        "AutomationCtrlrService": {
+            "period": 5
         }
+
     }
 }

@@ -46,7 +46,7 @@ Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilo
    ```
 2. Build with the command (Replace `x.x.x` with the code version):
    ```bash
-   docker build -f etc/docker/Dockerfile-pilot-link-ctrlr -t udspilotlinkds:1.7.0 .
+   docker build -f etc/docker/Dockerfile-pilot-link-ctrlr -t udspilotlinkctrlr:1.7.0 .
    ```
 3. Tag for pushing to your registry with the command (Replace `<myregistry>` with the registry you are using and `x.x.x` with the code version):
    ```bash
@@ -315,7 +315,7 @@ If you want the **UDS Pilot Link Data Services** to have storage allocated by a 
     {
         "version": "2.0",
         "service_config": {
-            "RegistrationCtrlrService": {
+            "DeployCtrlService": {
                 "period": 5,
                 "num_data_services": 2,
                 "storage_config": {
