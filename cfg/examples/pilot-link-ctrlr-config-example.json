@@ -56,6 +56,28 @@
                     "storage_class": "my_storage_class"
                 }
             }
+        },
+        "AutomationCtrlrService": {
+            "period": 5,
+            "automation_rules": [
+                {
+                    "name": "Import on detection of non-udx storage",
+                    "type": "ON_DETECT",
+                    "category": "INGEST",
+                    "mode": "ENTERPRISE_PERFORMANCE",
+                    "filter": "*",
+                    "destination": {
+                        "type": ["detected"],
+                        "category": ["UDX"],
+                        "serial_num": "6000c2962b122a6c3779e38cab08e146"
+                    },
+                    "source": {
+                        "type": ["detected"],
+                        "category": ["NON-UDX"],
+                        "serial_num": ".*"
+                    }
+                }
+            ]
         }
     }
 }
