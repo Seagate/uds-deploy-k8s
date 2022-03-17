@@ -153,6 +153,19 @@ We need to find the storage we want to use on `node-1`
    * `vendor_id` is `VENDOR`
    * `product_id` is `MODEL`
    * `serial_num` is `SERIAL`
+
+   **Note:** VMWare reports the `MODEL` field incorrectly is in some installations ` ` is incorrectly reported as `_`. Run the following command the get the correct model info:
+   ```bash
+   hwinfo --disk | grep -E "SysFS ID|Device:"
+   ```
+   ```bash
+    SysFS ID: /class/block/sdd
+    Device: "Virtual disk"
+    SysFS ID: /class/block/sde
+    Device: "Virtual disk"
+    SysFS ID: /class/block/sda
+    Device: "Virtual disk"
+   ``` 
   
  ` `
 
@@ -403,17 +416,18 @@ The `pilot-link-ds-config.json` configuration file in this example is defined as
     "service_config": {
         "DataMover": {
             "extensions": {
+                "timeout": 30,
                 "staging": {
                     "when": "pre",
                     "cmd": "dmx_staging.py"
                 },
                 "object_processing": {
                     "when": "pre",
-                    "cmd": "dmx_object_processing.py"
+                    "cmd": "/etc/uds/dmx_object_processing.py",
                 },
                 "verify": {
                     "when": "pre",
-                    "cmd": "dmx_script_verify.py"
+                    "cmd": "/etc/uds/dmx_script_verify.py"
                 }
             },
             "num_workers": 2,
