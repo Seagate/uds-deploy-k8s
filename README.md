@@ -153,6 +153,19 @@ We need to find the storage we want to use on `node-1`
    * `vendor_id` is `VENDOR`
    * `product_id` is `MODEL`
    * `serial_num` is `SERIAL`
+
+   **Note:** VMWare reports the `MODEL` field incorrectly is in some installations ` ` is incorrectly reported as `_`. Run the following command the get the correct model info:
+   ```bash
+   hwinfo --disk | grep -E "SysFS ID|Device:"
+   ```
+   ```bash
+    SysFS ID: /class/block/sdd
+    Device: "Virtual disk"
+    SysFS ID: /class/block/sde
+    Device: "Virtual disk"
+    SysFS ID: /class/block/sda
+    Device: "Virtual disk"
+   ``` 
   
  ` `
 
