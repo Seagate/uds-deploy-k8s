@@ -77,7 +77,8 @@ Two container are required, the **UDS Pilot Link Controller** and the **UDS Pilo
 
 ## UDS Pilot Link on Kubernetes Prerequisites
 1. **[Helm](https://helm.sh/)** **UDS Pilot Link** on Kubernetes is provided via Helm Charts. As such, you will need Helm installed locally on the master node to deploy **UDS Pilot Link** on Kubernetes. You can find the specific installation instructions for your local platform via the [Installing Helm](https://helm.sh/docs/intro/install/) section of the official Helm documentation.
-2. Clone [uds-deply-k8s](https://github.com/Seagate/uds-deploy-k8s) (this repo) onto your Kubernetes master node:
+2. Install `jq`. This is required for some of the scripts in `uds-deploy-k8s/scripts/examples`.
+3. Clone [uds-deply-k8s](https://github.com/Seagate/uds-deploy-k8s) (this repo) onto your Kubernetes master node:
    ```bash
    git@github.com:Seagate/uds-deploy-k8s.git
    ```
