@@ -646,7 +646,7 @@ We set the namespace to `detect1` using the `-n` option.
     **Note:** You may see  additional `pilot-link-ctrlr` and `pilot-link-ds` in the `Terminating` state as the update is completed.
 
 ## Collecting Logs from a UDS Pilot Link Deployment
-The `logs_pilot_link.sh` script is used to destroy a previously deployed **UDS Pilot Link** deployment. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
+The `logs_pilot_link.sh` script is used to gather logs from previously deployed **UDS Pilot Link** deployments. In this example we will update the `detect1` deployment that we deployed in the [Deploying UDS Pilot Link](#deploying-uds-pilot-link) section.
 
 We set the namespace to `detect1` using the `-n` option.
 
