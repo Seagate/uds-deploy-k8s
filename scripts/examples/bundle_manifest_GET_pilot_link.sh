@@ -19,7 +19,7 @@ do
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: Namespace of the Pilot Link Data Service. MUST be provided\n"
-            printf "      -p, --pilotlink: The name of the Pilot Link Data Service Pod the Bundle resides on. MUST be provided\n"
+            printf "      -p, --pilotlink: The name (excluding Pod instance) of the Pilot Link Data Service the Bundle resides on. MUST be provided\n"
             printf "      -v, --volumeid: The volume the Bundle resides on. MUST be provided\n"
             printf "      -b, --bundleid: The bundle to get the Manifest for. MUST be provided\n"
             printf "\n"
@@ -88,12 +88,12 @@ name=$NAME
 
 declare -a UDS_POD_ARRAY
 
-UDS_POD_ELEMS=$(kubectl get pod -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,IP:.status.podIP | grep $name)
+UDS_POD_ELEMS=$(kubectl get pod -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,IP:.status.podIP | grep $name-)
 
 found=false
 for UDS_POD_ELEM in $UDS_POD_ELEMS
 do
-    if [[ "$UDS_POD_ELEM" == "$NAME" ]]
+    if [[ "$UDS_POD_ELEM" == "$NAME"* ]]
     then
         found=true
         break

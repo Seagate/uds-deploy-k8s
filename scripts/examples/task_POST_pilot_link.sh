@@ -19,17 +19,17 @@ do
             printf "\n"
             printf "Examples:\n"
             printf "  # Post an INGEST task to a Pilot Link Data Service\n"
-            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1-7768476fcf-djhcx -o INGEST -s 3847d4b20006 -d b3bdbb197efd\n"
+            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1 -o INGEST -s 3847d4b20006 -d b3bdbb197efd\n"
             printf "\n"
             printf "  # Post an EXPORT task to a Pilot Link Data Service\n"
-            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1-7768476fcf-djhcx -o EXPORT -s b3bdbb197efd -d 0754537040c8 -f f05b173050084140aa40ed4875fb7e57\n"
+            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1 -o EXPORT -s b3bdbb197efd -d 0754537040c8 -f f05b173050084140aa40ed4875fb7e57\n"
             printf "\n"
             printf "  # Post an DELETE task to a Pilot Link Data Service\n"
-            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1-7768476fcf-djhcx -o D -s b3bdbb197efd -f f05b173050084140aa40ed4875fb7e57\n"
+            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1-o D -s b3bdbb197efd -f f05b173050084140aa40ed4875fb7e57\n"
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: Namespace of the Pilot Link Data Service. MUST be provided\n"
-            printf "      -p, --pilotlink: The name of the Pilot Link Data Service Pod to Post the task to. MUST be provided\n"
+            printf "      -p, --pilotlink: The name (excluding Pod instance) of the Pilot Link Data Service to Post the task to. MUST be provided\n"
             printf "      -s, --srcuri: The source uri. MUST be provided\n"
             printf "      -d, --dsturi: The destination uri. MUST be provided\n"
             printf "      -o, --operation: The operation to perform. MUST be provided\n"
@@ -147,12 +147,12 @@ name=$NAME
 
 declare -a UDS_POD_ARRAY
 
-UDS_POD_ELEMS=$(kubectl get pod -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,IP:.status.podIP | grep $name)
+UDS_POD_ELEMS=$(kubectl get pod -n $namespace -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,IP:.status.podIP | grep $name-)
 
 found=false
 for UDS_POD_ELEM in $UDS_POD_ELEMS
 do
-    if [[ "$UDS_POD_ELEM" == "$NAME" ]]
+    if [[ "$UDS_POD_ELEM" == "$NAME"* ]]
     then
         found=true
         break
