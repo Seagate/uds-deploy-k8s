@@ -140,27 +140,15 @@ then
     pilotlinknodelabel=$namespace
 fi
 
-if [[ $TYPE == "detect" ]]
-then
-    printf "Creating $namespace-$name\n"
-    helm install $namespace"-"$name $BASE_PATH/helm_pkg/pilot-link-ctrlr \
-        --set namespace=$namespace \
-        --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
-        --set pilotlinkctrlr.nodeselector.pilotlinknodelabel=$pilotlinknodelabel \
-        --set pilotlinkctrlr.dataservices.type=$TYPE \
-        --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
-        --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
-        --set-file pilotlinkctrlr.config.file=$CFG_FILE
-else
-    printf "Creating $namespace-$name\n"
-    helm install $namespace"-"$name $BASE_PATH/helm_pkg/pilot-link-ctrlr \
-        --set namespace=$namespace \
-        --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
-        --set pilotlinkctrlr.dataservices.type=$TYPE \
-        --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
-        --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
-        --set-file pilotlinkctrlr.config.file=$CFG_FILE
-fi
+printf "Creating $namespace-$name\n"
+helm install $namespace"-"$name $BASE_PATH/helm_pkg/pilot-link-ctrlr \
+    --set namespace=$namespace \
+    --set pilotlinkctrlr.pod.image=$PILOT_LINK_CTRLR_IMAGE \
+    --set pilotlinkctrlr.nodeselector.pilotlinknodelabel=$pilotlinknodelabel \
+    --set pilotlinkctrlr.dataservices.type=$TYPE \
+    --set pilotlinkctrlr.dataservices.image=$PILOT_LINK_DS_IMAGE \
+    --set pilotlinkctrlr.secret.lppassword=$LP_PASSWORD \
+    --set-file pilotlinkctrlr.config.file=$CFG_FILE
 
 while true
 do
