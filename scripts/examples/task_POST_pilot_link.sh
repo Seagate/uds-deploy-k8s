@@ -25,7 +25,7 @@ do
             printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1 -o EXPORT -s b3bdbb197efd -d 0754537040c8 -f f05b173050084140aa40ed4875fb7e57\n"
             printf "\n"
             printf "  # Post an DELETE task to a Pilot Link Data Service\n"
-            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1 -o D -s b3bdbb197efd -f f05b173050084140aa40ed4875fb7e57\n"
+            printf "  task_POST_pilot_link.sh -n namespace -p pilot-link-ds1 -o DELETE -s b3bdbb197efd -f f05b173050084140aa40ed4875fb7e57\n"
             printf "\n"
             printf "Options:\n"
             printf "      -n, --namespace: Namespace of the Pilot Link Data Service. MUST be provided\n"
