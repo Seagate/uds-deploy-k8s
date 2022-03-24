@@ -1,0 +1,199 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.pilotlinkctrlr.networkpolicy.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  ingress:
+  - {}
+  egress:
+  - {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
+rules:
+- apiGroups: [""]
+  resources: ["services", "secrets", "persistentvolumes", "persistentvolumeclaims", "configmaps"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: [""]
+  resources: ["events", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrolebinding.name }}
+subjects:
+  - kind: ServiceAccount
+    # Reference to upper's `metadata.name`
+    name: {{ .Values.pilotlinkctrlr.serviceaccount.name }}
+    # Reference to upper's `metadata.namespace`
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.clusterrole.name }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.pilotlinkctrlr.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  pilot-link-ctrlr-config.json:
+    {{ toJson .Values.pilotlinkctrlr.config.file }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-bkup" .Values.pilotlinkctrlr.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  pilot-link-ctrlr-config.json:
+    {{ toJson .Values.pilotlinkctrlr.config.file }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.pilotlinkctrlr.secret.name }}
+  namespace: {{ .Values.namespace }}
+type: Opaque
+stringData:
+  lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.pilotlinkctrlr.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pilotlinkctrlr.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pilotlinkctrlr.name }}
+    spec:
+      volumes:
+        - name: tmp-fs
+          emptyDir:
+            medium: Memory
+        - name: mnt-fs
+          emptyDir:
+            medium: Memory
+        - name: {{ .Values.pilotlinkctrlr.config.name }}
+          configMap: 
+            name: {{ .Values.pilotlinkctrlr.config.name }}
+        {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
+        {{- end }}
+      containers:
+        - name: {{ .Values.pilotlinkctrlr.name }}
+          image: {{ .Values.pilotlinkctrlr.pod.image }}
+          env:
+          - name: PILOT_LINK_NAMESPACE
+            value: {{ .Values.namespace }}
+          - name: PILOT_LINK_NODE_SELECTOR
+            value: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
+          - name: PILOT_LINK_CTRLR_NAME
+            value: {{ .Values.pilotlinkctrlr.name }}
+          {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+          - name: PILOT_LINK_CTRLR_MNT_BASE
+            value: {{ .Values.pilotlinkctrlr.pod.mountpath }}
+          {{- end }}
+          - name: PILOT_LINK_DS_TYPE
+            value: {{ .Values.pilotlinkctrlr.dataservices.type | quote }}
+          - name: PILOT_LINK_DS_IMAGE
+            value: {{ .Values.pilotlinkctrlr.dataservices.image | quote }}
+          - name: LYVE_PILOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pilotlinkctrlr.secret.name }}
+                key: lppassword
+          resources: {}
+          volumeMounts:
+            - name: tmp-fs
+              mountPath: /tmp
+            - name: mnt-fs
+              mountPath: /mnt
+            - name: {{ .Values.pilotlinkctrlr.config.name }}
+              mountPath: /etc/udsctrlr
+            {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+            - name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
+              mountPath: {{ .Values.pilotlinkctrlr.pod.mountpath }}
+              mountPropagation: Bidirectional
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
+              mountPath: /hostdev
+              mountPropagation: HostToContainer
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
+              mountPath: /hostsys
+              mountPropagation: HostToContainer
+            {{- end }}
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem : true
+          startupProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/ready
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/ready
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+              - unlink
+              - /tmp/alive
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 100m
+            limits:
+              memory: 500Mi
+              cpu: 400m
+      {{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+      nodeSelector:
+        pilotLinkNodeLabel: {{ .Values.pilotlinkctrlr.nodeselector.pilotlinknodelabel }}
+      {{- end }}
+      serviceAccountName: {{ .Values.pilotlinkctrlr.serviceaccount.name }}

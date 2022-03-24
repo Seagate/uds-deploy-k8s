@@ -1,0 +1,95 @@
+{{- if eq .Values.pilotlinkctrlr.dataservices.type "detect" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.detection.name }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: {{ .Values.pilotlinkctrlr.pv.detection.storage }}
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  hostPath:
+    path: {{ printf "%s/%s" .Values.pilotlinkctrlr.pv.detection.hostpath .Values.namespace }}
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdev.name }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  hostPath:
+    path: /dev
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostsys.name }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  hostPath:
+    path: /sys
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pvc.detection.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ .Values.pilotlinkctrlr.pvc.detection.storage }}
+  storageClassName: manual
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.detection.name }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdev.name }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostsys.name }}
+{{- end }}
