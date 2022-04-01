@@ -420,7 +420,7 @@ The `pilot-link-ds-config.json` configuration file in this example is defined as
                 "timeout": 30,
                 "staging": {
                     "when": "pre",
-                    "cmd": "dmx_staging.py"
+                    "cmd": "/etc/uds/dmx_staging.py"
                 },
                 "object_processing": {
                     "when": "pre",
@@ -492,7 +492,7 @@ configmap/pilot-link-dmx-cfg created
 
 Check that the deployment is ready by making sure all pods are up and running with the command:
 ```bash
- kubectl get pods -n detect1
+ kubectl get pods -n dmx1
 ```
 You will see 1 `pilot-link-ctrlr` and 2 `pilot-link-ds` pods. Make sure that `READY` is `1/1` and `STATUS` is `Running`
 ```bash
