@@ -403,12 +403,13 @@ This section defines how to deploy **UDS Pilot Link** with **DMX**. It is define
 * Validate a file and return PASSED, FAILED or IGNORE
 * Add customerInfo tags to the manifest and metadata
 
-**Note:** The purpose of this section is not to define the internal details of the scripts, but to define how to package and deploy the scripts with **UDS Pilot Link**.
+**Note:** The purpose of this section is not to define the internal details of the scripts (for DMX internal details go to [DMX README.md](./dmx/README.md) ), but to define how to package and deploy the scripts with **UDS Pilot Link**.
 
 ### Creating a DMX Package
 The DMX package is `tar.gz` files containing a configuration file and scripts.
 
-**Note:** The configuration file must be called `pilot-link-ds-config.json` the script can be named differently as they are defined in the configuration file.
+**Note:** The configuration file must be called `pilot-link-ds-config.json` the script can be named differently as they are defined in the configuration file. The absolute path to the scripts must
+be `/etc/uds`.
 
 The `pilot-link-ds-config.json` configuration file in this example is defined as:
 ```bash
@@ -428,7 +429,7 @@ The `pilot-link-ds-config.json` configuration file in this example is defined as
                 },
                 "verify": {
                     "when": "pre",
-                    "cmd": "/etc/uds/dmx_script_verify.py"
+                    "cmd": "/etc/uds/dmx_verify.py"
                 }
             },
             "num_workers": 2,
@@ -440,7 +441,7 @@ The `pilot-link-ds-config.json` configuration file in this example is defined as
     }
 }
 ```
-The `when` parameter defines if the script is run before or after the UDS Data Moevr operation. Scripts can be defined for the `staging`, `object_processing` and `verify` operations. If a script is not defined the standard UDS Data Mover operation will be run with no DMX extension.
+The `when` parameter defines if the script is run before or after the UDS Data Mover operation. Scripts can be defined for the `staging`, `object_processing` and `verify` operations. If a script is not defined the standard UDS Data Mover operation will be run with no DMX extension.
 
 To create the DMX package we start with all of the files in a directory `my_dmx_package`:
 
@@ -585,9 +586,9 @@ We will update the configuration file `pilot-link-ctrlr-config-detect1.json` cre
 ## Modify a UDS Pilot Link DMX Configuration on a Running Deployment
 The `modify_pilot_link_dmx.sh` script is used to modify the **DMX** package previously deployed **UDS Pilot Link**. In this example we will modify the `dmx1` deployment that we deployed in the [Deploying Pilot Link on Kubernetes with DMX (Data Mover eXtensions)](#deploying-pilot-link-on-kubernetes-with-dmx-data-mover-extensions) section.
 
-We create new **DMX** package `dmx1.tar,gz` with steps defined in the [Creating a DMX Package](#creating-a-dmx-package) section.
+We create new **DMX** package `dmx1.tar.gz` with steps defined in the [Creating a DMX Package](#creating-a-dmx-package) section.
 
-We set the namespace to `dmx1` with the `-n` option. We set the **DMX** package with to `dmx1.tar.gz` using the `-d` option.
+We set the namespace to `dmx1` with the `-n` option. We set the **DMX** package to `dmx1.tar.gz` using the `-d` option.
 
 **Note:** The **DMX** package can be removed from the deployment by omitting the `-d` option.
 
