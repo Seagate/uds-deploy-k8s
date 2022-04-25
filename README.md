@@ -362,7 +362,7 @@ The `deploy_pilot_link.sh` script is used to deploy **UDS Pilot Link**. In this 
 
 We set the namespace to the same as the label `detect1` that we put on `node-1` using the `-n` option. We enable storage detection with the `-s` option. We provide the configuration file `pilot-link-ctrlr-detect1-config.json` with the `-f` option.
 
-**Note:** The script will ask for a password for the auto registration feature. The feature is not enabled for Lyve Pilot yet. We `echo notset` for the password to avoid the interactive prompt.
+**Note:** The script will ask for a password for the auto registration feature. We `echo notset` for the password to avoid the interactive prompt.
 
 **Note:** Information on the all functions and usage is available by providing the `-h` option
 
