@@ -4,23 +4,28 @@
 
 ### DMX pre staging script:
 * Absolute path to the directory that contains the source file (Ex: /dmx/examples/sample_data)
+* DMX option, a free form string, which can be provided upon UDS task create as it is an optional
+parameter (see [Note](#note)). If this parameter is not provided, an empty string will be passed
+into DMX scripts.
 
 ```bash
-/etc/uds/dmx_staging.py /dmx/examples/sample_data
+/etc/uds/dmx_staging.py /dmx/examples/sample_data "free form string"
 ```
 
 ### DMX object processing and DMX verify scripts
-* Data file name (Ex: 'filename.jpg')
 * UDS operation (Ex: 'INGEST', 'EXPORT', 'CHECK')
 * File info, in JSON string format, stored in the manifest file (Ex: '{"fileName": "filename.jpg", "fileSize": 1024}')
 * Absolute path to the directory that contains the source files (Ex: '/dmx/examples/sample_data')
+* DMX option, a free form string, which can be provided upon UDS task create as it is an optional
+parameter (see [Note](#note)). If this parameter is not provided, an empty string will be passed
+into DMX scripts.
 
 ```bash
-/etc/uds/dmx_object_processing.py 'filename.jpg' 'INGEST' '{"fileName": "filename.jpg", "fileSize": 1024}' '/dmx/examples/sample_data'
+/etc/uds/dmx_object_processing.py 'INGEST' '{"fileName": "filename.jpg", "fileSize": 1024}' '/dmx/examples/sample_data' 'free form string'
 
-/ect/uds/dmx_object_processing.py 'filename.jpg' 'EXPORT' '{"fileName": "filename.jpg", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}' '/root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7'
+/ect/uds/dmx_object_processing.py 'EXPORT' '{"fileName": "filename.jpg", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}' '/root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7' 'free form string'
 
-/etc/uds/dmx_script_verify.py 'filename.jpg' 'CHECK' '{"fileName": "filename.jpg", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}' '/root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7'
+/etc/uds/dmx_script_verify.py 'CHECK' '{"fileName": "filename.jpg", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}' '/root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7' 'free form string'
 ```
 
 ### Expected response from DMX script
@@ -72,6 +77,8 @@ tags = []
 # Parameter that gets passed into the script is the absolute path to the source volume
 # Example: /dmx/examples/sample_data
 data_path = sys.argv[1]
+# An free form string that gets passed on UDS task create
+dmx_option = sys.argv[2]
 
 # Function that checks to see if 'value' is already on the 'list'
 def is_already_on_list(value, list):
@@ -141,16 +148,19 @@ status = 'PASSED'
 reason = 'Good'
 tags = []
 
-uds_operation = sys.argv[2]
-# 'sys.argv[3]' example:
+# UDS operation: INGEST, EXPORT, COPY/MOVE
+uds_operation = sys.argv[1]
+# 'sys.argv[2]' example:
 # '{"fileName": "filename.jpg", "fileSize": 1024}'
 # '{"fileName": "file1.txt", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}'
-manifest_file_info_str = sys.argv[3]
+manifest_file_info_str = sys.argv[2]
 # Convert the manifest file info from string format to dictionary.
 manifest_file_info_dict = json.loads(manifest_file_info_str)
 # Parameter that gets passed into the script is the absolute path to the source volume
 # Example: /root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7
-data_path = sys.argv[4]
+data_path = sys.argv[3]
+# An free form string that gets passed on UDS task create
+dmx_option = sys.argv[4]
 
 if uds_operation == 'INGEST':
     # Build absolute path to the data file
@@ -219,15 +229,19 @@ status = 'PASSED'
 reason = 'Good'
 tag = []
 
-# 'sys.argv[3]' example:
+# UDS operation: INGEST, EXPORT, COPY/MOVE
+uds_operation = sys.argv[1]
+# 'sys.argv[2]' example:
 # '{"fileName": "filename.jpg", "fileSize": 1024}'
 # '{"fileName": "file1.txt", "fileSize": 10, "customInfo": {"tags": ["TAG_1", "TAG_2"]}}'
-manifest_file_info_str = sys.argv[3]
+manifest_file_info_str = sys.argv[2]
 # Convert the manifest file info from string format to dictionary.
 manifest_file_info_dict = json.loads(manifest_file_info_str)
 # Parameter that gets passed into the script is the absolute path to the source volume
 # Example: /root/.uds/ingested/.uds/data_store/324cc1dcd320482cafa6677dd8de91a7
-data_path = sys.argv[4]
+data_path = sys.argv[3]
+# An free form string that gets passed on UDS task create
+dmx_option = sys.argv[4]
 
 # Add verify logic here
 
@@ -240,3 +254,32 @@ result = {
 print(result)
 ```
 
+### Note:
+
+Below is UDS task create in JSON format. "dmxOption" is an optional parameter that gets
+passed into DMX script if provided.
+
+```
+{
+  "category": "INGEST",
+  "filter": "string",
+  "sourceUri": "string",
+  "destinationUri": "string",
+  "sourceCredentials": {
+    "accessKey": "string",
+    "secretKey": "string"
+  },
+  "destinationCredentials": {
+    "accessKey": "string",
+    "secretKey": "string"
+  },
+  "userId": "string",
+  "deduplicate": true,
+  "verify": true,
+  "orchestrationMode": "ENTERPRISE_PERFORMANCE",
+  "jsonPathFilter": [
+    "string"
+  ],
+  "dmxOption": "string"
+}
+```
