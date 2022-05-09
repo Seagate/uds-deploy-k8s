@@ -79,7 +79,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 type: Opaque
 stringData:
-  lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword }}
+  lppassword: {{ .Values.pilotlinkctrlr.secret.lppassword | quote }}
 ---
 apiVersion: apps/v1
 kind: Deployment
