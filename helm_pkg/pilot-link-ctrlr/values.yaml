@@ -27,6 +27,8 @@ pilotlinkctrlr:
             hostpath: /mnt/pilot-link/storage
         hostdev:
             name: pilot-link-ctrlr-hostdev
+        hostboot:
+            name: pilot-link-ctrlr-hostboot
         hostsys:
             name: pilot-link-ctrlr-hostsys
     pvc:
@@ -35,6 +37,8 @@ pilotlinkctrlr:
             storage: 1Gi
         hostdev:
             name: pilot-link-ctrlr-hostdev
+        hostboot:
+            name: pilot-link-ctrlr-hostboot
         hostsys:
             name: pilot-link-ctrlr-hostsys
     dataservices:
