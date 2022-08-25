@@ -5,7 +5,7 @@ udsdeploy:
   revision:
     major: 1
     minor: 0
-    subminor: 2
+    subminor: 3
   qualifier:
     - development
   created_timestamp:
