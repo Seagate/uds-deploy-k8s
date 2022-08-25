@@ -113,6 +113,9 @@ spec:
         - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
+        - name: {{ .Values.pilotlinkctrlr.pvc.hostboot.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pilotlinkctrlr.pvc.hostboot.name }}
         - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
@@ -154,6 +157,9 @@ spec:
               mountPropagation: Bidirectional
             - name: {{ .Values.pilotlinkctrlr.pvc.hostdev.name }}
               mountPath: /hostdev
+              mountPropagation: HostToContainer
+            - name: {{ .Values.pilotlinkctrlr.pvc.hostboot.name }}
+              mountPath: /hostboot
               mountPropagation: HostToContainer
             - name: {{ .Values.pilotlinkctrlr.pvc.hostsys.name }}
               mountPath: /hostsys

@@ -35,6 +35,22 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostboot.name }}
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  hostPath:
+    path: /boot
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
   name: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostsys.name }}
   labels:
     type: local
@@ -77,6 +93,21 @@ spec:
       storage: 1Gi
   storageClassName: manual
   volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostdev.name }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pilotlinkctrlr.pvc.hostboot.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadOnlyMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+  volumeName: {{ printf "%s-%s" .Values.namespace .Values.pilotlinkctrlr.pv.hostboot.name }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
